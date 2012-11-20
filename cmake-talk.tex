@@ -1,61 +1,61 @@
-\documentclass[12pt]{beamer}
+\documentclass[12pt] {beamer}
 
-\usepackage[utf8]{inputenc}
-\usepackage[english]{babel}
-\usetheme{Air}
-\usepackage{thumbpdf}
-\usepackage{wasysym}
-\usepackage{ucs}
-\usepackage[utf8]{inputenc}
-\usepackage{pgf,pgfarrows,pgfnodes,pgfautomata,pgfheaps,pgfshade}
-\usepackage{verbatim}
+\usepackage[utf8] {inputenc}
+\usepackage[english] {babel}
+\usetheme {Air}
+\usepackage {thumbpdf}
+\usepackage {wasysym}
+\usepackage {ucs}
+\usepackage[utf8] {inputenc}
+\usepackage {pgf,pgfarrows,pgfnodes,pgfautomata,pgfheaps,pgfshade}
+\usepackage {verbatim}
 
 \pdfinfo
 {
-  /Title       (Build facili con CMake)
-  /Creator     (TeX)
-  /Author      (Carlo Nicolini)
+    /Title       (Build facili con CMake)
+    /Creator     (TeX)
+    /Author      (Carlo Nicolini)
 }
 
 
-\title{Build facili con CMake}
-\subtitle{Il sistema di build -definitivo-}
-\author{Carlo Nicolini}
-\date{\today}
+\title {Build facili con CMake}
+\subtitle {Il sistema di build -definitivo-}
+\author {Carlo Nicolini}
+\date {\today}
 
-\begin{document}
+\begin {document}
 
-\frame{\titlepage}
+\frame {\titlepage}
 
-\section*{}
-\begin{frame}
-  \frametitle{Outline}
-  \tableofcontents[section=1,hidesubsections]
-\end{frame}
+\section* {}
+\begin {frame}
+\frametitle {Outline}
+\tableofcontents[section=1,hidesubsections]
+\end {frame}
 
 \AtBeginSection[]
 {
-  \frame<handout:0>
-  {
-    \frametitle{Outline}
-    \tableofcontents[currentsection,hideallsubsections]
-  }
+    \frame<handout:0>
+    {
+        \frametitle{Outline}
+        \tableofcontents[currentsection,hideallsubsections]
+    }
 }
 
 \AtBeginSubsection[]
 {
-  \frame<handout:0>
-  {
-    \frametitle{Outline}
-    \tableofcontents[sectionstyle=show/hide,subsectionstyle=show/shaded/hide]
-  }
+    \frame<handout:0>
+    {
+        \frametitle{Outline}
+        \tableofcontents[sectionstyle=show/hide,subsectionstyle=show/shaded/hide]
+    }
 }
 
-\newcommand<>{\highlighton}[1]{%
-  \alt#2{\structure{#1}}{{#1}}
-}
+\newcommand<> {\highlighton} [1] {%
+\alt#2{\structure{#1}}{{#1}}
+                                 }
 
-\newcommand{\icon}[1]{\pgfimage[height=1em]{#1}}
+\newcommand {\icon} [1] {\pgfimage[height=1em]{#1}}
 
 
 
@@ -65,180 +65,323 @@
 
 \section{Introduzione}
 \begin{frame}
-  \frametitle{Motivazioni}
-  \begin{itemize}
-  \item Split fra sviluppatore e maintainer
-  \item Portabilità su molti O.S.
-  \item Semplicità delle build
-  \item Migliore rapporto con cliente/comunit\'a di sviluppatori
-  \item Unit testing
-  \end{itemize}
+\frametitle{Motivazioni}
+\begin{itemize}
+\item Split fra sviluppatore e maintainer
+\item Portabilità su molti O.S.
+\item Semplicità delle build
+\item Migliore rapporto con cliente/comunit\'a di sviluppatori
+\item Unit testing
+\end{itemize}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{Il passato}
-  \begin{block}{Sistema di build}
-  \begin{itemize}
-	\item Come fare una build?
-	\item Come differenziare Debug e Release
-	\item Flag al compilatore?
-	\item Come linkare? Shared o static?
-  \end{itemize}
-  \end{block}
+\begin{block}{Sistema di build}
+\begin{itemize}
+\item Come fare una build?
+\item Come differenziare Debug e Release
+\item Flag al compilatore?
+\item Come linkare? Shared o static?
+\end{itemize}
+\end{block}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-  \frametitle{In passato}
-  Compilazione manuale (anni 60):
-  \texttt{gcc -c mylibrary.cpp mylibrary.h -o mylibrary.o}
-  
-  Quando si hanno molti file diventa dura! Sistemi di build automatici:
-  \begin{itemize}
-  \item Scons \textit{poco usato, cross-platform, necessita competenze di programmatore}
-  \item Autotools \textit{ molto usato, sintassi complicatissima }
-  \item Jam \textit{ buggy, dipendenze fatte a mano}
-  \item Waf \textit{lasciam perdere}
-  \item eccetera...
-  \end{itemize}
+\frametitle{In passato}
+Compilazione manuale (anni 60):
+\texttt{gcc -c mylibrary.cpp mylibrary.h -o mylibrary.o}
+
+Sistemi di build automatici:
+
+\begin{itemize}
+\item Scons \textit{poco usato, cross-platform, necessita competenze di programmatore}
+\item Autotools \textit{ molto usato, sintassi complicatissima }
+\item Jam \textit{ buggy, dipendenze fatte a mano}
+\item Waf \textit{lasciam perdere}
+\item eccetera...
+\end{itemize}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-  \frametitle{Ora!}
-  Compilazione 2012-style
-  \texttt{cmake .}
-  \textt{make -j4}
-  
-  Quando si hanno molti file diventa dura! Sistemi di build automatici:
-  \begin{itemize}
-  \item Scons \textit{poco usato, cross-platform, necessita competenze di programmatore}
-  \item Autotools \textit{ molto usato, sintassi complicatissima }
-  \item Jam \textit{ buggy, dipendenze fatte a mano}
-  \item Waf \textit{lasciam perdere}
-  \item eccetera...
-  \end{itemize}
+\frametitle{CMake}
+Un sistema di build moderno gestisce building, testing e packaging tutto insieme.
+\begin{itemize}
+		\item Cross plattform (veramente).
+		\item Dipendenze soddisfatte sempre (veramente).
+		\item Un linguaggio di scripting che da libertà (vera).
+		\begin{itemize}
+			\item \texttt{\#define } a compile-time.
+			\item Creazione menu Gnome, aggiunta icone e creazione setup personalizzati.
+			\item Build differenziate per multi-architettura.
+		\end{itemize}
+		\item \textbf{Out-of-source} builds
+\end{itemize}
 \end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{CMake}
+\begin{itemize}
+	\item Sistema di \emph{meta-make}
+	\item Genera Makefile o progetti (detti \emph{generatori})
+	Kdevelop3, Eclipse, XCode, makefiles (Unix, NMake, Borland, Watcom, MinGW, MSYS, Cygwin), Code::Blocks etc
+	\item Progetti multipli-eseguibili multipli
+\end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\begin{frame}
+%\frametitle{CMake workflow}
+%	\begin{itemize}
+%		\item CMakeLists.txt
+%		\item Makefile/.vcproj/ .xcode
+%		\item .obj/.o
+%		\item .exe/ .dll/ .lib/ .dylib
+%	\end{itemize}
+%\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{CMake tree e primi passi}
+Supponiamo questo tree:
+
+\begin{itemize}
+\item \textbf{src}
+\begin{itemize}
+	\item myapp.cpp
+	\item myapp.h
+	\item CMakeLists.txt
+\end{itemize}
+\item \textbf{build}
+\item CMakeLists.txt
+\end{itemize}
+
+Si fa la build con:
+\begin{itemize}
+	\item cmake .
+	\item make
+\end{itemize}
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Struttura di base di un CMakeLists.txt}
+
 \begin{frame}
-  \frametitle{Sections, Frames and Blocks}
-  
-  The current section is "Basic structuring". And the current frame
-  is what you have on the screen right now.
+	\frametitle{HelloWorld eseguibile}
+\begin{small}
+\#Creiamo il nome del progetto
 
-  \begin{block}{A beautiful block}
-  A block has a title, and some content. You can put in a block
-  almost everything you want that is provided by LaTeX. For example
-  math works as usual:
-    \begin{equation}
-    \sum_{i=1}^n i = \frac{n \times (n+1)}{2}
-    \end{equation}
-  \end{block}
+\textbf{PROJECT( helloworld )}
 
-  Also works outside a block:
-  \begin{equation}
-  \sum_{i=1}^n i^2 = \frac{n \times (n+1) \times (2n+1)}{6}
-  \end{equation}
+\# Impostiamo la variabile hello\_SRCS a contenere la hello.cpp
+
+\textbf{SET( hello\_SRCS hello.cpp )}
+
+\# Crea l'eseguibile di nome hello dal file contenuto nella variabile hello\_SRCS
+
+\textbf{ADD\_EXECUTABLE( hello \$\{hello\_SRCS\} )}
+
+\begin{itemize}
+	\item Tutte le variabili sono \textbf{stringhe}
+	\item Le variabili si dereferenziano bash-style \$\{NOMEVARIABILE\}
+	\item Le variabili si impostano con SET
+\end{itemize}
+\end{small}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+	\frametitle{Creazione libreria statica .a}
+\begin{small}
+\#Creiamo il nome del progetto
+
+\textbf{PROJECT( mylibrary )}
+
+\# Impostiamo la variabile mylibrary\_SRCS a contenere tutti i file che definiscono la libreria
+
+\textbf{SET( mylibrary\_SRCS Foo.cpp Bar.cpp Qux.cpp)}
+
+\# Crea una libreria STATICA (di default in CMake) a partire dai sorgenti
+
+\# in Linux con gcc genera un file \emph{lib}myLibrary.a
+
+\textbf{ADD\_LIBRARY( myLibrary \$\{mylibrary\_SRCS\} )}
+
+\# Oppure crea una libreria SHARED (o DINAMICA in Windows) a partire dai sorgenti
+
+\# in Linux con gcc genera un file \emph{lib}myLibrary.so
+\textbf{ADD\_LIBRARY( myLibrary SHARED \$\{mylibrary\_SRCS\} )}
+\end{small}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+	\frametitle{Linguaggio - Variabili}
+	\begin{itemize}
+		\item Non serve dichiararle (stringa vuota se non esistono)
+		\item Atipizzate
+		\item SET crea e modifica variabili
+		\item SET si affianca a LIST
+		\item SEPARATE\_ARGUMENTS spezza argomenti separati da spazio in una LIST
+		\item In Cmake 2.4: globali (name clashing problems)  In Cmake 2.6: scoped
+		\item CMake corrente 2.9
+\end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+	\frametitle{Linguaggio - Variabili}
+	\begin{itemize}
+		\item Non serve dichiararle (stringa vuota se non esistono)
+		\item Atipizzate
+		\item SET crea e modifica variabili
+		\item SET si affianca a LIST
+		\item SEPARATE\_ARGUMENTS spezza argomenti separati da spazio in una LIST
+		\item In Cmake 2.4: globali (name clashing problems)  In Cmake 2.6: scoped
+		\item CMake corrente 2.9
+\end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+	\frametitle{Flessibilita - Costrutti condizionali}
+	Variabili di sistema e costrutti
+	
+	\begin{small}
+		if ( MSVC )
+		
+		endif ( MSVC )
+		
+		if ( UNIX )
+		
+		endif (UNIX)
+		
+		if (APPLE)
+		
+		endif(APPLE)
+		
+	\end{small}
+	P.S. Tutte le variabili sono globali nel singolo CMakeLists.txt
+	P.S. Non esiste un costrutto \textbf{switch}
 \end{frame}
 
 \begin{frame}
-  \frametitle{Different type of blocks}
-  \framesubtitle{Weeeee! Colors!!}
-  \begin{block}{Standard block}
-  \begin{itemize}
-    \item A standard block, used for grouping
-    \item Obviously can contain itemizes too...
-    \begin{itemize}
-      \item And nested itemizes...
-      \item of course!
-    \end{itemize}
-  \end{itemize}
-  \end{block}
-  \begin{alertblock}{Alert block}
-  WARNING: Something very important inside this block!
-  \end{alertblock}
-  \begin{example}
-  Note that examples are displayed as a special block...
-  \end{example}
+	\frametitle{Flessibilita - Espressioni regolari}
+	Complicate ma possibili
+	
+	STRING( REGEX MATCH ... )
+	
+	STRING (REGEX MATCHALL ... )
+	
+	STRING(REGEX REPLACE ... )
+	
 \end{frame}
 
+\begin{frame}
+	\frametitle{Compatibilità con versioni precedenti}
+	
+	Molto importante impostare la compatibilita con le versioni precedenti
+	
+	Mantenere CMake up-to-date
+	
+	\textbf{CMAKE\_MINIMUM\_REQUIRED(VERSION 2.6.0 FATAL\_ERROR)}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Cmake cache}
+	CMake salva le variabili non variate in un file CMakeCache.txt
+	
+	Velocissimo su Unix
+	
+	Lento su Windows (con compilatore MSVC)
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Supporto a librerie esterne}
 \begin{frame}
-  \frametitle{Highlighting}
-  \framesubtitle{Hey! Look here! here!}
+\frametitle{Highlighting}
+\framesubtitle{Hey! Look here! here!}
 
 
-  \begin{alertblock}{If it's very very important...}
-  \alert{... you can "alert" in an "alertblock"}\\
-  Ewww, nasty, heh?
-  \end{alertblock}
+\begin{alertblock}{If it's very very important...}
+\alert{... you can "alert" in an "alertblock"}\\
+Ewww, nasty, heh?
+\end{alertblock}
 \end{frame}
 
 \section{Creazione pacchi con CPack}
 \begin{frame}
-  \frametitle{Highlighting}
+\frametitle{Highlighting}
 CPack è il progetto cugino di CMake con cui è strettamente integrato e permette di creare pacchi:
 \begin{itemize}
-	\item Linux generici ( .sh, .tgz )
-	\item Distro-based ( .deb, .rpm, )
-	\item OSX (creazione .app o dischi .dmg )
-	\item Windows (creazione setup.exe grazie a NSIS installer e 7Zip )
+\item Linux generici ( .sh, .tgz )
+\item Distro-based ( .deb, .rpm, )
+\item OSX (creazione .app o dischi .dmg )
+\item Windows (creazione setup.exe grazie a NSIS installer e 7Zip )
 \end{itemize}
 \begin{itemize}
-	\item Pacchi architettura-specifici
-	\item Cross compilazione!
+\item Pacchi architettura-specifici
+\item Cross compilazione!
 \end{itemize}
 
 \end{frame}
 
 
-\newcommand{\putlink}[1]{%
-   \pgfsetlinewidth{1.4pt}%
-   \pgfsetendarrow{\pgfarrowtriangle{4pt}}%
-   \pgfline{\pgfxy(1,1)}{\pgfxy(#1,1)}
-}
+\newcommand{\putlink} [1]{%
+                          \pgfsetlinewidth{1.4pt}%
+                          \pgfsetendarrow{\pgfarrowtriangle{4pt}}%
+\pgfline{\pgfxy(1,1)}{\pgfxy(#1,1)}
+                         }
 
 \begin{frame}
-  \frametitle{Risorse online}
-  \begin{thebibliography}{10}
+\frametitle{Risorse online}
+\begin{thebibliography}{10}
 
-  \beamertemplatearticlebibitems
+\beamertemplatearticlebibitems
 
-	\bibitem{CMake mailing list}
-	Mailing list ufficiale degli utenti di CMake
-	\newblock{\url{http://www.cmake.org/mailman/listinfo/cmake}}
-	
-	\bibitem{stackoverflow}
-	Sito di domande e risposte, frequentato da molti utenti di CMake
-	\newblock{\url{www.stackoverflow.com}}
-	
-	\bibitem{Cmake tutorial}
-	CMake tutorial online
-	\newblock{\url{http://www.cmake.org/cmake/help/cmake_tutorial.html}}
-	
-	\bibitem{Mastering CMake}
-	Il libro ufficiale, insostituibile (in biblioteca di ingegneria a Mesiano )
-	\newblock{\url{http://www.kitware.com/products/books/CMakeBook.html}}
-	
-  \bibitem{kdeslides}
-    Slides fatte con il tema beamer offerto da KDE
-    \newblock {\tt http://www.kde.org/kdeslides/}
+\bibitem{CMake mailing list}
+Mailing list ufficiale degli utenti di CMake
+\newblock{\url{http://www.cmake.org/mailman/listinfo/cmake}}
 
-  \end{thebibliography}
-\end{frame}
+               \bibitem{stackoverflow}
+               Sito di domande e risposte, frequentato da molti utenti di CMake
+               \newblock{\url{www.stackoverflow.com}}
+
+               \bibitem{Cmake tutorial}
+               CMake tutorial online
+               \newblock{\url{http://www.cmake.org/cmake/help/cmake_tutorial.html}}
+
+                              \bibitem{Mastering CMake}
+                              Il libro ufficiale, insostituibile (in biblioteca di ingegneria a Mesiano )
+                              \newblock{\url{http://www.kitware.com/products/books/CMakeBook.html}}
+
+                                        \bibitem{kdeslides}
+                                        Slides fatte con il tema beamer offerto da KDE
+                                        \newblock {\tt http://www.kde.org/kdeslides/}
+
+                                                \end{thebibliography}
+                                                \end{frame}
 
 \frame{
-  \vspace{2cm}
-  {\huge Domande ?}
-	
-  \vspace{3cm}
-  \begin{flushright}
+    \vspace{2cm}
+    {\huge Domande ?}
+
+    \vspace{3cm}
+    \begin{flushright}
     Carlo Nicolini
 
     \structure{\footnotesize{nicolini.carlo@gmail.com}}
-  \end{flushright}
+    \end{flushright}
 }
 
 \end{document}
