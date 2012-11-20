@@ -65,16 +65,60 @@
 
 \section{Introduzione}
 \begin{frame}
-  \frametitle{Qual'è il problema}
+  \frametitle{Motivazioni}
+  \begin{itemize}
+  \item Split fra sviluppatore e maintainer
+  \item Portabilità su molti O.S.
+  \item Semplicità delle build
+  \item Migliore rapporto con cliente/comunit\'a di sviluppatori
+  \item Unit testing
+  \end{itemize}
+\end{frame}
 
-  \begin{block}{Beamer}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Il passato}
+  \begin{block}{Sistema di build}
   \begin{itemize}
 	\item Come fare una build?
 	\item Come differenziare Debug e Release
-    \item Cross-platform
+	\item Flag al compilatore?
+	\item Come linkare? Shared o static?
   \end{itemize}
   \end{block}
+\end{frame}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+  \frametitle{In passato}
+  Compilazione manuale (anni 60):
+  \texttt{gcc -c mylibrary.cpp mylibrary.h -o mylibrary.o}
+  
+  Quando si hanno molti file diventa dura! Sistemi di build automatici:
+  \begin{itemize}
+  \item Scons \textit{poco usato, cross-platform, necessita competenze di programmatore}
+  \item Autotools \textit{ molto usato, sintassi complicatissima }
+  \item Jam \textit{ buggy, dipendenze fatte a mano}
+  \item Waf \textit{lasciam perdere}
+  \item eccetera...
+  \end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+  \frametitle{Ora!}
+  Compilazione 2012-style
+  \texttt{cmake .}
+  \textt{make -j4}
+  
+  Quando si hanno molti file diventa dura! Sistemi di build automatici:
+  \begin{itemize}
+  \item Scons \textit{poco usato, cross-platform, necessita competenze di programmatore}
+  \item Autotools \textit{ molto usato, sintassi complicatissima }
+  \item Jam \textit{ buggy, dipendenze fatte a mano}
+  \item Waf \textit{lasciam perdere}
+  \item eccetera...
+  \end{itemize}
 \end{frame}
 
 \section{Struttura di base di un CMakeLists.txt}

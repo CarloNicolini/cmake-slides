@@ -1,5 +1,5 @@
 
-NAME= example-talk
+NAME= cmake-talk
 
 all: $(NAME).pdf
 
