@@ -1,12 +1,12 @@
 \documentclass[12pt] {beamer}
 
-\usepackage[utf8] {inputenc}
+\usepackage[utf8]{inputenc}
 \usepackage[english] {babel}
 \usetheme {Air}
 \usepackage {thumbpdf}
 \usepackage {wasysym}
 \usepackage {ucs}
-\usepackage[utf8] {inputenc}
+\beamertemplatenavigationsymbolsempty
 \usepackage {pgf,pgfarrows,pgfnodes,pgfautomata,pgfheaps,pgfshade}
 \usepackage {verbatim}
 
@@ -251,30 +251,69 @@ Si fa la build con:
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{frame}
-	\frametitle{Flessibilita - Costrutti condizionali}
-	Variabili di sistema e costrutti
-	
-	\begin{small}
-		if ( MSVC )
-		
-		endif ( MSVC )
-		
-		if ( UNIX )
-		
-		endif (UNIX)
-		
-		if (APPLE)
-		
-		endif(APPLE)
-		
-	\end{small}
-	P.S. Tutte le variabili sono globali nel singolo CMakeLists.txt
-	P.S. Non esiste un costrutto \textbf{switch}
+\begin{frame}[fragile]
+	\frametitle{Flessibilita - Sintassi}
+\begin{itemize}
+ \item Costrutto condizionale IF
+	\begin{verbatim}
+	IF ( expression )
+	...
+	ELSE ( expression )
+	...
+	ENDIF ( expression )
+	\end{verbatim}
+\item Costrutto FOREACH ( comodo per liste)
+	\begin{verbatim}
+	FOREACH ( loopvariable )
+	...
+	ENDFOREACH ( loopvariable )
+	\end{verbatim}
+\item Ciclo WHILE
+	\begin{verbatim}
+	WHILE ( condition )
+	...
+	ENDWHILE ( condition )
+	\end{verbatim}
+\end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]
+\frametitle{Esempio di foreach e wildcards su files}
+\begin{verbatim}
+file(GLOB mytestfiles "test*.cpp")
+foreach(testfile ${mytestfiles})
+  message(STATUS "This is a test file ${testfile}")
+endforeach(testfile ${mytestfiles })
+\end{verbatim}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]
+\frametitle{switch condizionali di sistema}
+\begin{verbatim}
+IF ( MSVC )
+ENDIF ( MSVC )
+
+IF (WIN32)
+ENDIF (WIN32)
+ 		
+IF ( UNIX )
+ENDIF (UNIX)
+ 		
+IF (APPLE)
+ENDIF (APPLE)
+\end{verbatim}
+\begin{itemize}
+\item Tutte le variabili sono scoped nel singolo CMakeLists.txt
+\item Non esiste un costrutto \textbf{switch}
+\end{itemize}
 \end{frame}
 
 \begin{frame}
-	\frametitle{Flessibilita - Espressioni regolari}
+	\frametitle{ Espressioni regolari}
 	Complicate ma possibili
 	
 	STRING( REGEX MATCH ... )
@@ -285,25 +324,129 @@ Si fa la build con:
 	
 \end{frame}
 
-\begin{frame}
-	\frametitle{Compatibilità con versioni precedenti}
-	
-	Molto importante impostare la compatibilita con le versioni precedenti
-	
-	Mantenere CMake up-to-date
-	
-	\textbf{CMAKE\_MINIMUM\_REQUIRED(VERSION 2.6.0 FATAL\_ERROR)}
 
+
+
+\begin{frame}[fragile]
+ \frametitle{ Espressioni regolari }
+How to convert a semicolon separated list to a whitespace separated string?
+\begin{verbatim}
+set(foo abc.c abc.b abc.a)
+
+foreach(arg ${foo})
+    set(bar "${bar} ${arg}")
+endforeach(arg ${foo})
+ 
+message("foo: ${foo}")
+message("bar: ${bar}")
+\end{verbatim}
 \end{frame}
 
-\begin{frame}
-	\frametitle{Cmake cache}
-	CMake salva le variabili non variate in un file CMakeCache.txt
-	
-	Velocissimo su Unix
-	
-	Lento su Windows (con compilatore MSVC)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Compatibilità con versioni precedenti}
+\begin{itemize}
+\item Molto importante impostare la compatibilita con le versioni precedenti, cambi di sintassi e bug-fix
+\item Mantenere sempre CMake all'ultima versione (attuale 2.8.10)
+\item Variabile di sistema apposita
+\end{itemize}
+\begin{verbatim}
+ CMAKE_MINIMUM_REQUIRED(VERSION 2.6.0 FATAL_ERROR)
+\end{verbatim}
 \end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Cmake cache}
+\begin{itemize}
+\item CMake salva le variabili non variate in un file CMakeCache.txt
+\item Veloce su Unix, lento su Windows (MSVC)
+\item Utile ripulire la cache
+\end{itemize}	
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Gestione di Debug e Release}
+\begin{itemize}
+\item Una variabile definisce il tipo di build
+\item
+\begin{verbatim}
+SET(CMAKE_BUILD_TYPE XXX)
+\end{verbatim}
+    \begin{itemize}
+    \item Debug
+    \item Release
+    \item RelWithDebInfo
+    \item MinSizeRel
+    \item Profile
+    \end{itemize}
+\item oppure da linea di comando:
+\begin{verbatim}
+cmake -DCMAKE_BUILD_TYPE=Debug .
+\end{verbatim}
+
+\item \texttt{Debug} $\rightarrow$ gdb+valgrind, grosse dimensioni
+\item Si rilascia il pacchetto sempre in \texttt{Release}
+\item \texttt{Profile} utile quando accoppiata con gprof/KCacheGrind
+\end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+ \frametitle{Versionamento compile-time}
+\begin{itemize}
+ \item Utilizzare il modulo \texttt{UseSubversion} \url{http://bit.ly/WjwiRP} (ripulire il repo prima)
+\item Vengono definite alcune variabili utili:
+\begin{itemize}
+\item 
+
+\begin{small}
+\begin{verbatim}
+SUBVERSION_REPO_REVISION
+SUBVERSION_REPO_LAST_CHANGED_DATE
+etcetera
+\end{verbatim}
+\end{small}
+\item Passabili al compilatore come flags:
+\begin{small}
+\begin{verbatim}
+ADD_DEFINITIONS(-DREV_NUMBER=
+"${SUBVERSION_REPO_REVISION}")
+\end{verbatim}
+\end{small}
+\end{itemize}
+\item Nel codice C/C++ quindi:
+\begin{verbatim}
+int revision=REV_NUMBER;
+printf("La versione corrente è %d\n", revision);
+\end{verbatim}
+\end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+ \frametitle{Generare la documentazione}
+Aggiungere un target \texttt{doc} ed usare \texttt{FindDoxygen.cmake}
+\begin{footnotesize}
+\begin{verbatim}
+# Aggiunge un target al Makefile per generare 
+# la doc usando Doxygen
+find_package(Doxygen)
+if(DOXYGEN_FOUND)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile 
+    ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
+add_custom_target(doc
+${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
+WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+COMMENT "Generating API documentation with Doxygen" 
+    VERBATIM )
+endif(DOXYGEN_FOUND)
+\end{verbatim}
+\end{footnotesize}
+\footnote{\url{http://bit.ly/9eel8b}}
+\end{frame}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
