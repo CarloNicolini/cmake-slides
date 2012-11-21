@@ -146,26 +146,26 @@ Kdevelop3, Eclipse, XCode, Code::Blocks ,VisualStudio, Makefiles (Unix, NMake, B
 %\end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
+\begin{frame}[fragile]
 \frametitle{CMake tree e primi passi}
-Supponiamo questo tree:
+Supponiamo di avere questo tree:
 
 \begin{itemize}
-\item \textbf{src}
+\item<1-> \textbf{src}
 \begin{itemize}
 	\item myapp.cpp
 	\item myapp.h
 	\item CMakeLists.txt
 \end{itemize}
-\item \textbf{build}
-\item CMakeLists.txt
+\item<2-> \textbf{build}
+\item<3-> CMakeLists.txt
 \end{itemize}
 
 Si fa la build con:
-\begin{itemize}
-	\item cmake .
-	\item make
-\end{itemize}
+\begin{verbatim}
+ cmake .
+ make
+\end{verbatim}
 \end{frame}
 
 
