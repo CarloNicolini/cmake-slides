@@ -63,14 +63,14 @@
 Un sistema di build per C/C++ ci permette di essere più efficienti, produttivi e chiari.
 Vogliamo un sistema di build che ci permetta
 \begin{itemize}
-\item<1> Portabilità su molti O.S.
-\item<2> Gestione di molti tipi di build diversa
-\item<3> Supporto a librerie esterne
-\item<4> Facilità di mantenimento di un progetto
-\item<5> Chiarezza ed intuitività, \textbf{velocità} di build
-\item<6> Build parallele
-\item<7> Miglior rapporto con chi userà il nostro codice
-\item<8> Packing, unit testing, profiling e debugging ALL-IN-ONE
+\item<1-> Portabilità su molti O.S.
+\item<2-> Gestione di molti tipi di build diversa
+\item<3-> Supporto a librerie esterne
+\item<4-> Facilità di mantenimento di un progetto
+\item<5-> Chiarezza ed intuitività, \textbf{velocità} di build
+\item<6-> Build parallele
+\item<7-> Miglior rapporto con chi userà il nostro codice
+\item<8-> Packing, unit testing, profiling e debugging ALL-IN-ONE
 \end{itemize}
 \end{frame}
 
@@ -101,11 +101,11 @@ In passato sono apparsi tanti sistemi, ognuno con i suoi pro e contro. Dimentich
 e passiamo ai sistemi di build automatici:
 
 \begin{itemize}
-\item<1> Scons \textit{basato su Python, cross-platform}
-\item<2> Autotools \textit{ molto usato, sintassi complicata (Autohell), solo Unix }
-\item<3> Jam \textit{ (cross-platform,cross-language), buggy, poco automatico}\footnote{\url{http://en.wikipedia.org/wiki/Perforce_Jam}}
-\item<4> Waf \textit{ python un singolo file da redistribuire \footnote{\url{http://docs.waf.googlecode.com/git/book_17/waf.pdf}}}
-\item<5> eccetera...
+\item<1-> Scons \textit{basato su Python, cross-platform}
+\item<2-> Autotools \textit{ molto usato, sintassi complicata (Autohell), solo Unix }
+\item<3-> Jam \textit{ (cross-platform,cross-language), buggy, poco automatico}\footnote{\url{http://en.wikipedia.org/wiki/Perforce_Jam}}
+\item<4-> Waf \textit{ python un singolo file da redistribuire \footnote{\url{http://docs.waf.googlecode.com/git/book_17/waf.pdf}}}
+\item<5-> eccetera...
 \end{itemize}
 In genere, poco supporto, piccola comunità, tanti bachi.
 \end{frame}
@@ -114,30 +114,26 @@ In genere, poco supporto, piccola comunità, tanti bachi.
 
 \begin{frame}
 \frametitle{CMake}
-Un sistema di build moderno gestisce building, testing e packaging tutto insieme.
+Un sistema di build moderno gestisce building, testing e packaging tutto insieme, scritto in C++, supporta progetti C/C++\footnote{\url{www.cmake.org}}.
 \begin{itemize}
-		\item Cross plattform (veramente).
-		\item Dipendenze soddisfatte sempre (veramente).
-		\item Un linguaggio di scripting che da libertà (vera).
+		\item<1-> Sistema di meta-make, multiprogetto (targets)
+		\item<2-> Supporto a tanti ambienti di sviluppo (IDE) tramite \emph{generatori}: 
+
+Kdevelop3, Eclipse, XCode, Code::Blocks ,VisualStudio, Makefiles (Unix, NMake, Borland, MinGW, Cygwin)
+
+		\item<3-> Cross plattform (veramente).
+		\item<4-> Dipendenze soddisfatte sempre (veramente).
+		\item<5-> Un linguaggio di scripting che da libertà (vera).
 		\begin{itemize}
-			\item \texttt{\#define } a compile-time.
-			\item Creazione menu Gnome, aggiunta icone e creazione setup personalizzati.
-			\item Build differenziate per multi-architettura.
+			\item<6-> \texttt{\#define } a compile-time tramite variabili scriptabili.
+			\item<7-> Supporto menu Gnome, icone e creazione setup personalizzati.
+			\item<8-> Centinaia di librerie esterne supportate.
 		\end{itemize}
-		\item \textbf{Out-of-source} builds
+		\item<9-> Build multiprocessore
+		\item<10-> \textbf{Out-of-source} builds: fare una build senza ``sporcare'' la codebase
 \end{itemize}
 \end{frame}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{CMake}
-\begin{itemize}
-	\item Sistema di \emph{meta-make}
-	\item Genera Makefile o progetti (detti \emph{generatori})
-	Kdevelop3, Eclipse, XCode, makefiles (Unix, NMake, Borland, Watcom, MinGW, MSYS, Cygwin), Code::Blocks etc
-	\item Progetti multipli-eseguibili multipli
-\end{itemize}
-\end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\begin{frame}
 %\frametitle{CMake workflow}
