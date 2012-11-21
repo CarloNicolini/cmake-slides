@@ -1,15 +1,13 @@
-\documentclass[12pt] {beamer}
-
+\documentclass[10pt] {beamer}
 \usepackage[utf8]{inputenc}
-\usepackage[english] {babel}
+\usepackage[english]{babel}
 \usetheme {Air}
 \usepackage {thumbpdf}
 \usepackage {wasysym}
 \usepackage {ucs}
 \beamertemplatenavigationsymbolsempty
-\usepackage {pgf,pgfarrows,pgfnodes,pgfautomata,pgfheaps,pgfshade}
+%\usepackage {pgf,pgfarrows,pgfnodes,pgfautomata,pgfheaps,pgfshade}
 \usepackage {verbatim}
-
 \pdfinfo
 {
     /Title       (Build facili con CMake)
@@ -27,7 +25,6 @@
 
 \frame {\titlepage}
 
-\section* {}
 \begin {frame}
 \frametitle {Outline}
 \tableofcontents[section=1,hidesubsections]
@@ -54,10 +51,7 @@
 \newcommand<> {\highlighton} [1] {%
 \alt#2{\structure{#1}}{{#1}}
                                  }
-
 \newcommand {\icon} [1] {\pgfimage[height=1em]{#1}}
-
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%% Content starts here %%%%%%%%%%
@@ -66,46 +60,58 @@
 \section{Introduzione}
 \begin{frame}
 \frametitle{Motivazioni}
+Un sistema di build per C/C++ ci permette di essere più efficienti, produttivi e chiari.
+Vogliamo un sistema di build che ci permetta
 \begin{itemize}
-\item Split fra sviluppatore e maintainer
-\item Portabilità su molti O.S.
-\item Semplicità delle build
-\item Migliore rapporto con cliente/comunit\'a di sviluppatori
-\item Unit testing
+\item<1> Portabilità su molti O.S.
+\item<2> Gestione di molti tipi di build diversa
+\item<3> Supporto a librerie esterne
+\item<4> Facilità di mantenimento di un progetto
+\item<5> Chiarezza ed intuitività, \textbf{velocità} di build
+\item<6> Build parallele
+\item<7> Miglior rapporto con chi userà il nostro codice
+\item<8> Packing, unit testing, profiling e debugging ALL-IN-ONE
 \end{itemize}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{Il passato}
-\begin{block}{Sistema di build}
+Un sistema di build si occupa di generare eseguibili/librerie partendo dai sorgenti \footnote{\url{http://www.cs.virginia.edu/~dww4s/articles/build_systems.html}}
+\begin{figure}[htb]
+ \centering
+ \includegraphics[width=0.6\textwidth]{hello_digraph.png}
+\end{figure}
+Problema delle dipendenze è un problema su grafo DAG. Il grafo direzionato informa il sistema di build cosa ricompilare se un file cambia. Se \texttt{hello.c} cambia allora tutti i nodi da lì in poi devono essere ricompilati
+Un buon sistema di build affronta e risolve i seguenti problemi:
 \begin{itemize}
-\item Come fare una build?
-\item Come differenziare Debug e Release
-\item Flag al compilatore?
-\item Come linkare? Shared o static?
+\item Soluzione delle dipendenze 
+\item Build parallele
+\item Analisi dei punti di articolazione (limite al parallelismo)
 \end{itemize}
-\end{block}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
+\begin{frame}[fragile]
 \frametitle{In passato}
-Compilazione manuale (anni 60):
-\texttt{gcc -c mylibrary.cpp mylibrary.h -o mylibrary.o}
-
-Sistemi di build automatici:
+In passato sono apparsi tanti sistemi, ognuno con i suoi pro e contro. Dimentichiamo la compilazione manuale (anni 70)
+\begin{verbatim}
+ gcc -c mylibrary.cpp mylibrary.h -o mylibrary.o
+\end{verbatim}
+e passiamo ai sistemi di build automatici:
 
 \begin{itemize}
-\item Scons \textit{poco usato, cross-platform, necessita competenze di programmatore}
-\item Autotools \textit{ molto usato, sintassi complicatissima }
-\item Jam \textit{ buggy, dipendenze fatte a mano}
-\item Waf \textit{lasciam perdere}
-\item eccetera...
+\item<1> Scons \textit{basato su Python, cross-platform}
+\item<2> Autotools \textit{ molto usato, sintassi complicata (Autohell), solo Unix }
+\item<3> Jam \textit{ (cross-platform,cross-language), buggy, poco automatico}\footnote{\url{http://en.wikipedia.org/wiki/Perforce_Jam}}
+\item<4> Waf \textit{ python un singolo file da redistribuire \footnote{\url{http://docs.waf.googlecode.com/git/book_17/waf.pdf}}}
+\item<5> eccetera...
 \end{itemize}
+In genere, poco supporto, piccola comunità, tanti bachi.
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \begin{frame}
 \frametitle{CMake}
 Un sistema di build moderno gestisce building, testing e packaging tutto insieme.
@@ -396,29 +402,28 @@ endif(DOXYGEN_FOUND)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Struttura di base di un CMakeLists.txt}
+\section{Esempi e tutorial}
 
-\begin{frame}
-	\frametitle{HelloWorld eseguibile}
-\begin{small}
-\#Creiamo il nome del progetto
-
-\textbf{PROJECT( helloworld )}
-
-\# Impostiamo la variabile hello\_SRCS a contenere la hello.cpp
-
-\textbf{SET( hello\_SRCS hello.cpp )}
-
-\# Crea l'eseguibile di nome hello dal file contenuto nella variabile hello\_SRCS
-
-\textbf{ADD\_EXECUTABLE( hello \$\{hello\_SRCS\} )}
+\begin{frame}[fragile]
+\frametitle{HelloWorld eseguibile}
+\begin{verbatim}
+#Creiamo il nome del progetto
+PROJECT( helloworld )
+# Impostiamo la variabile hello_SRCS a contenere la hello.cpp
+SET( hello\_SRCS hello.cpp )
+# Crea l'eseguibile di nome hello dal file contenuto nella variabile hello\_SRCS
+ADD\_EXECUTABLE( hello \$\{hello\_SRCS\} )
+\end{verbatim}
 
 \begin{itemize}
 	\item Tutte le variabili sono \textbf{stringhe}
-	\item Le variabili si dereferenziano bash-style \$\{NOMEVARIABILE\}
+	\item Le variabili si dereferenziano bash-style 
+	  \begin{verbatim}
+	  ${NOMEVARIABILE} 
+	  \end{verbatim}
 	\item Le variabili si impostano con SET
 \end{itemize}
-\end{small}
+
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -453,6 +458,28 @@ endif(DOXYGEN_FOUND)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Supporto a librerie esterne}
+\begin{frame}[fragile]
+ \frametitle{Supporto a OpenMP}
+\begin{footnotesize}
+\begin{verbatim}
+include(FindOpenMP)
+if(OPENMP_FOUND)
+   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} 
+         ${OpenMP_CXX_FLAGS}")
+   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} 
+         ${OpenMP_EXE_LINKER_FLAGS}")
+endif()
+\end{verbatim}
+\end{footnotesize}
+\begin{itemize}
+ \item Sceglie il flag appropriato del compilatore (g++ -fopenmp, icc -openmp, MSVC /OMP )
+ \item Problemi con \texttt{vcompd.dll}, modificare il file manifest con MSVC9 (2008)\footnote{\url{http://kitware.com/blog/home/post/4}}
+\item \url{http://public.kitware.com/Bug/view.php?id=12964}
+\end{itemize}
+
+\end{frame}
+
+
 \begin{frame}[fragile]
 \frametitle{CMake e Qt}
 CMake interagisce molto bene con Qt (e viceversa)
@@ -493,6 +520,25 @@ add_executable(MyApp WIN32 ${MyApp_SRC} ${MyApp_HDR}
 \end{footnotesize}
 \end{frame}
 
+\begin{frame}[fragile]
+ \frametitle{Semplice progettino con Qt}
+\begin{verbatim}
+ PROJECT( pfrac )
+FIND_PACKAGE( Qt4 REQUIRED )
+INCLUDE( ${QT_USE_FILE} )
+SET( pfrac_SRCS main.cpp client.h client.cpp )
+SET( pfrac_MOC_HEADERS client.h )
+QT4_ADD_RESOURCES( pfrac_SRCS 
+     ${PROJECT_SOURCE_DIR}/pfrac.qrc )
+QT4_WRAP_CPP( pfrac_MOC_SRCS 
+     ${pfrac_MOC_HEADERS} )
+ADD_EXECUTABLE( pfrac ${pfrac_SRCS} $
+{pfrac_MOC_SRCS} 
+TARGET_LINK_LIBRARIES( pfrac ${QT_LIBRARIES} )
+\end{verbatim}
+
+\end{frame}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -503,7 +549,6 @@ add_executable(MyApp WIN32 ${MyApp_SRC} ${MyApp_HDR}
 \begin{frame}
  \frametitle{FFTW}
 \end{frame}
-
 
 
 \section{Creazione pacchi con CPack}
