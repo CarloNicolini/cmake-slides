@@ -167,59 +167,6 @@ Si fa la build con:
 \end{frame}
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\section{Struttura di base di un CMakeLists.txt}
-
-\begin{frame}
-	\frametitle{HelloWorld eseguibile}
-\begin{small}
-\#Creiamo il nome del progetto
-
-\textbf{PROJECT( helloworld )}
-
-\# Impostiamo la variabile hello\_SRCS a contenere la hello.cpp
-
-\textbf{SET( hello\_SRCS hello.cpp )}
-
-\# Crea l'eseguibile di nome hello dal file contenuto nella variabile hello\_SRCS
-
-\textbf{ADD\_EXECUTABLE( hello \$\{hello\_SRCS\} )}
-
-\begin{itemize}
-	\item Tutte le variabili sono \textbf{stringhe}
-	\item Le variabili si dereferenziano bash-style \$\{NOMEVARIABILE\}
-	\item Le variabili si impostano con SET
-\end{itemize}
-\end{small}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\begin{frame}
-	\frametitle{Creazione libreria statica .a}
-\begin{small}
-\#Creiamo il nome del progetto
-
-\textbf{PROJECT( mylibrary )}
-
-\# Impostiamo la variabile mylibrary\_SRCS a contenere tutti i file che definiscono la libreria
-
-\textbf{SET( mylibrary\_SRCS Foo.cpp Bar.cpp Qux.cpp)}
-
-\# Crea una libreria STATICA (di default in CMake) a partire dai sorgenti
-
-\# in Linux con gcc genera un file \emph{lib}myLibrary.a
-
-\textbf{ADD\_LIBRARY( myLibrary \$\{mylibrary\_SRCS\} )}
-
-\# Oppure crea una libreria SHARED (o DINAMICA in Windows) a partire dai sorgenti
-
-\# in Linux con gcc genera un file \emph{lib}myLibrary.so
-\textbf{ADD\_LIBRARY( myLibrary SHARED \$\{mylibrary\_SRCS\} )}
-\end{small}
-\end{frame}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{frame}
@@ -252,7 +199,7 @@ Si fa la build con:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{frame}[fragile]
-	\frametitle{Flessibilita - Sintassi}
+	\frametitle{Sintassi}
 \begin{itemize}
  \item Costrutto condizionale IF
 	\begin{verbatim}
@@ -447,20 +394,117 @@ endif(DOXYGEN_FOUND)
 \footnote{\url{http://bit.ly/9eel8b}}
 \end{frame}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Supporto a librerie esterne}
+\section{Struttura di base di un CMakeLists.txt}
+
 \begin{frame}
-\frametitle{Highlighting}
-\framesubtitle{Hey! Look here! here!}
+	\frametitle{HelloWorld eseguibile}
+\begin{small}
+\#Creiamo il nome del progetto
 
+\textbf{PROJECT( helloworld )}
 
-\begin{alertblock}{If it's very very important...}
-\alert{... you can "alert" in an "alertblock"}\\
-Ewww, nasty, heh?
-\end{alertblock}
+\# Impostiamo la variabile hello\_SRCS a contenere la hello.cpp
+
+\textbf{SET( hello\_SRCS hello.cpp )}
+
+\# Crea l'eseguibile di nome hello dal file contenuto nella variabile hello\_SRCS
+
+\textbf{ADD\_EXECUTABLE( hello \$\{hello\_SRCS\} )}
+
+\begin{itemize}
+	\item Tutte le variabili sono \textbf{stringhe}
+	\item Le variabili si dereferenziano bash-style \$\{NOMEVARIABILE\}
+	\item Le variabili si impostano con SET
+\end{itemize}
+\end{small}
 \end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+	\frametitle{Creazione libreria statica .a}
+\begin{small}
+\#Creiamo il nome del progetto
+
+\textbf{PROJECT( mylibrary )}
+
+\# Impostiamo la variabile mylibrary\_SRCS a contenere tutti i file che definiscono la libreria
+
+\textbf{SET( mylibrary\_SRCS Foo.cpp Bar.cpp Qux.cpp)}
+
+\# Crea una libreria STATICA (di default in CMake) a partire dai sorgenti
+
+\# in Linux con gcc genera un file \emph{lib}myLibrary.a
+
+\textbf{ADD\_LIBRARY( myLibrary \$\{mylibrary\_SRCS\} )}
+
+\# Oppure crea una libreria SHARED (o DINAMICA in Windows) a partire dai sorgenti
+
+\# in Linux con gcc genera un file \emph{lib}myLibrary.so
+\textbf{ADD\_LIBRARY( myLibrary SHARED \$\{mylibrary\_SRCS\} )}
+\end{small}
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Supporto a librerie esterne}
+\begin{frame}[fragile]
+\frametitle{CMake e Qt}
+CMake interagisce molto bene con Qt (e viceversa)
+\begin{footnotesize}
+\begin{verbatim}
+set(QT_MIN_VERSION "4.6.0")
+set(QT_USE_QTMAIN TRUE)
+set(QT_USE_OPENGL TRUE)
+find_package(Qt4 4.6.0 COMPONENTS QtGui QtCore 
+	    QtOpenGL REQUIRED )
+INCLUDE(${QT_USE_FILE})
+\end{verbatim}
+\end{footnotesize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]
+ \frametitle{CMake e Qt}
+\begin{footnotesize}
+\begin{verbatim}
+set(MyApp_HDR  Foo.h)
+# MyApp source files
+set(MyApp_SRC main.cpp mainwindow.cpp Foo.cpp )
+# User interface files
+set(MyApp_FORMS mainwindow.ui ) 
+set(MyApp_RESOURCES "myapp_images.qrc")
+
+QT4_ADD_RESOURCES( MyApp_RESOURCES_SOURCES 
+    ${MyApp_RESOURCES} )
+QT4_WRAP_UI( MyApp_FORMS_HEADERS ${MyApp_FORMS} )
+QT4_WRAP_CPP( MyApp_HEADERS_MOC ${MyApp_HDR} )
+
+add_executable(MyApp WIN32 ${MyApp_SRC} ${MyApp_HDR}
+    ${MyApp_HEADERS_MOC} ${MyApp_RESOURCES_SOURCES}
+    ${MyApp_FORMS_HEADERS} ${MyApp_RCS})
+\end{verbatim}
+\end{footnotesize}
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\frametitle{OpenGL/GLUT/Glew}
+\end{frame}
+
+\begin{frame}
+ \frametitle{FFTW}
+\end{frame}
+
+
 
 \section{Creazione pacchi con CPack}
 \begin{frame}
