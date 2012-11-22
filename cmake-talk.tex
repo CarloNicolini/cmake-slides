@@ -546,6 +546,63 @@ TARGET_LINK_LIBRARIES( pfrac ${QT_LIBRARIES} )
  \frametitle{FFTW}
 \end{frame}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]
+\frametitle{Boost}
+Boost è una libreria estensione del C++:
+\begin{itemize}
+\item ``...one of the most highly regarded and expertly designed C++ library projects in the world.''
+— Herb Sutter and Andrei Alexandrescu, C++ Coding Standards
+\item ``Item 55: Familiarize yourself with Boost.``
+— Scott Meyers, Effective C++, 3rd Ed.
+\item ``The obvious solution for most programmers is to use a library that provides an elegant and efficient platform independent to needed services. Examples are BOOST...''
+— Bjarne Stroustrup, Abstraction, libraries, and efficiency in C++
+\end{itemize}
+Boost contiene supporto headers-only e anche librerie bimap, containers generici, interfacce IO, socket, \textbf{threading}.
+\end{frame}
+
+\begin{frame}[fragile]
+ \frametitle{CMake + Boost}
+Nel CMakeLists.txt di base
+\begin{verbatim}
+# Set the needed boost libraries 
+set(BOOST_LIBS thread date_time system program_options 
+  filesystem regex serialization iostreams)
+set(Boost_USE_STATIC_LIBS        ON)
+set(Boost_USE_MULTITHREADED      ON)
+set(Boost_USE_STATIC_RUNTIME    OFF)
+
+find_package(Boost COMPONENTS ${BOOST_LIBS} REQUIRED)
+include_directories(${Boost_INCLUDE_DIR})
+find_package(Threads REQUIRED)
+\end{verbatim}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]
+ \frametitle{CMake + Boost}
+Linkare una libreria a Boost
+\begin{verbatim}
+add_library(FooBar Foo.cpp Bar.cpp)
+target_link_libraries(FooBar 
+  ${BOOST_LIBRARIES})
+\end{verbatim}
+Linkare un eseguibile a Boost:
+\begin{verbatim}
+add_executable(myApplication myApplication.cpp 
+    Foo.cpp Bar.cpp)
+target_link_libraries(myApplication(myApplication 
+    ${BOOST_LIBRARIES})
+\end{verbatim}
+Viene \textbf{automagicamente} selezionata la versione della libreria corretta:
+\begin{itemize}
+\item \textbf{build statica multithread} \verb_/usr/lib/libboost_\verb_thread-mt.a_
+\item \textbf{build dinamica non-multithread} \verb_/usr/lib/libboost_\verb_thread.so_
+\end{itemize}
+\end{frame}
 
 \section{Creazione pacchi con CPack}
 \begin{frame}
