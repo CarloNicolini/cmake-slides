@@ -117,7 +117,7 @@ In genere, poco supporto, piccola comunità, tanti bachi.
 Un sistema di build moderno gestisce building, testing e packaging tutto insieme, scritto in C++, supporta progetti C/C++\footnote{\url{www.cmake.org}}.
 \begin{itemize}
 		\item<1-> Sistema di meta-make, multiprogetto (targets)
-		\item<2-> Supporto a tanti ambienti di sviluppo (IDE) tramite \emph{generatori}: 
+		\item<2-> Supporto a tanti ambienti di sviluppo (IDE) tramite \emph{generatori}\footnote{\url{http://www.cmake.org/cmake/help/v2.8.8/cmake.html\#section\_Generators}}: 
 
 Kdevelop3, Eclipse, XCode, Code::Blocks ,VisualStudio, Makefiles (Unix, NMake, Borland, MinGW, Cygwin)
 
@@ -261,16 +261,27 @@ ENDIF (APPLE)
 \end{itemize}
 \end{frame}
 
-\begin{frame}
-	\frametitle{ Espressioni regolari}
-	Complicate ma possibili
-	
-	STRING( REGEX MATCH ... )
-	
-	STRING (REGEX MATCHALL ... )
-	
-	STRING(REGEX REPLACE ... )
-	
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]
+\frametitle{ Espressioni regolari}
+Complicate ma possibili
+\begin{verbatim}
+STRING( REGEX MATCH ... )
+STRING (REGEX MATCHALL ... )
+STRING(REGEX REPLACE ... )
+\end{verbatim}
+Esempio:
+\begin{verbatim}
+SET(test "hello world ! catch: me if you can")
+STRING(REGEX REPLACE ".*catch: ([^ ]+).*" "\\1" result "${test}" )
+MESSAGE(STATUS "result= ${result}")
+\end{verbatim}
+stampa a stdout:
+\begin{verbatim}
+  -- result= me
+\end{verbatim}
+(il ``--'' è stampato ad ogni riga di default)
 \end{frame}
 
 
@@ -535,17 +546,6 @@ TARGET_LINK_LIBRARIES( pfrac ${QT_LIBRARIES} )
 
 \end{frame}
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\begin{frame}
-\frametitle{OpenGL/GLUT/Glew}
-\end{frame}
-
-\begin{frame}
- \frametitle{FFTW}
-\end{frame}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{frame}[fragile]
@@ -603,6 +603,49 @@ Viene \textbf{automagicamente} selezionata la versione della libreria corretta:
 \item \textbf{build dinamica non-multithread} \verb_/usr/lib/libboost_\verb_thread.so_
 \end{itemize}
 \end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]
+ \frametitle{CMake + OpenGL}
+Esistono diversi modi di supportare OpenGL con CMake, sono tutti cross-platform
+\begin{itemize}
+ \item FindOpenGL.cmake
+ \item FindGlut.cmake
+\end{itemize}
+
+Su Linux è molto facile (previa installazione di GLU/GLUT/FreeGLUT
+\begin{verbatim}
+find_package(OpenGL REQUIRED)
+include_directories(${OPENGL_INCLUDE_DIR})
+find_package(GLUT REQUIRED)
+set(GL_LIBS ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES})
+...
+target_link_libraries(myApp ${GL_LIBS})
+\end{verbatim}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+ \frametitle{Chiamate al sistema}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]
+ \frametitle{Chiamate al sistema - Esempio}
+\begin{verbatim}
+include( UseCython )
+add_custom_target( ReplicatePythonSourceTree ALL ${CMAKE_COMMAND} -P
+  ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ReplicatePythonSourceTree.cmake
+  ${CMAKE_CURRENT_BINARY_DIR}
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )
+\end{verbatim}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Creazione pacchi con CPack}
 \begin{frame}
