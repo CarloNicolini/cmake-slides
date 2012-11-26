@@ -1,5 +1,5 @@
 \documentclass[10pt] {beamer}
-\usepackage[utf8]{inputenc}
+\usepackage[utf8x]{inputenc}
 \usepackage[english]{babel}
 \usetheme{Berlin}
 \usepackage{thumbpdf}
@@ -16,45 +16,16 @@
 }
 
 
-\title {Build facili con CMake}
-\subtitle {Il sistema di build -definitivo-}
-\author {Carlo Nicolini}
-\date {\today}
+\title{Build facili con CMake}
+\subtitle{Il sistema di build -definitivo-}
+\author{Carlo Nicolini}
+\date{\today}
 
 \begin {document}
-
-\frame {\titlepage}
-
-\begin {frame}
-\frametitle {Outline}
-\tableofcontents[section=1,hidesubsections]
-\end {frame}
-
-\AtBeginSection[]
-{
-    \frame<handout:0>
-    {
-        \frametitle{Outline}
-        \tableofcontents[currentsection,hideallsubsections]
-    }
-}
-
-\AtBeginSubsection[]
-{
-    \frame<handout:0>
-    {
-        \frametitle{Outline}
-        \tableofcontents[sectionstyle=show/hide,subsectionstyle=show/shaded/hide]
-    }
-}
-
-\newcommand<> {\highlighton} [1] {%
-\alt#2{\structure{#1}}{{#1}}
-                                 }
-\newcommand {\icon} [1] {\pgfimage[height=1em]{#1}}
+\frame{\titlepage}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%% Content starts here %%%%%%%%%%
+%%%%%%%%%% INTRODUZIONE %%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Introduzione}
@@ -82,8 +53,9 @@ Un sistema di build si occupa di generare eseguibili/librerie partendo dai sorge
  \centering
  \includegraphics[width=0.6\textwidth]{images/hello_digraph.png}
 \end{figure}
-Problema delle dipendenze = punti d'articolazione su grafo DAG. Limite al parallelismo.
+Problema delle dipendenze = punti d'articolazione su grafo DAG.
 
+Limite al parallelismo (CMake supporta build multiprocessore).
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -123,68 +95,110 @@ Kdevelop3, Eclipse, XCode, Code::Blocks ,VisualStudio, Makefiles (Unix, NMake, B
 			\item<7-> Supporto menu Gnome, icone e creazione setup personalizzati.
 			\item<8-> Centinaia di librerie esterne supportate.
 		\end{itemize}
-		\item<9-> Build multiprocessore
-		\item<10-> \textbf{Out-of-source} builds: fare una build senza ``sporcare'' la codebase
+		\item<9-> \textbf{Out-of-source} builds: fare una build senza ``sporcare'' la codebase
 \end{itemize}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]
+ \frametitle{Moduli supportati}
+\begin{block}{Forniti insieme a CMake}
+ ALSA, Armadillo, ASPELL, AVIFile, BISON, \textbf{BLAS}, Boost, Bullet, BZip2, CABLE, 
+ Coin3D, \textbf{CUDA}, Cups, CURL, Curses, CVS, CxxTest, \textbf{Cygwin}, Dart, DCMTK, 
+ DevIL, Doxygen, EXPAT, FLEX, FLTK2, FLTK, Gettext,
+ GIF, Git, GLU, \textbf{GLUT}, Gnuplot, GnuTLS, GTest, GTK2, GTK, HDF5, HSPELL, 
+ HTMLHelp, \textbf{ImageMagick}, ITK, Jasper, Java, JNI, JPEG, KDE3, \textbf{KDE4}, LAPACK, LATEX, 
+ LibArchive, LibXml2, LibXslt, Lua50, Lua51, Matlab, MFC, Motif, MPEG2, MPEG, MPI, 
+ OpenAL, OpenGL, OpenMP, OpenSceneGraph, OpenSSL, OpenThreads, osgAnimation,  
+PackageMessage, \textbf{Perl}, PerlLibs, PHP4, PhysFS, Pike, PkgConfig, PNG, PostgreSQL,  PythonInterp, 
+ \textbf{PythonLibs}, Qt3, \textbf{Qt4}, QuickTime, Ruby, SDL, SelfPackers, Subversion, 
+ SWIG, TCL, Tclsh, TclStub, \textbf{Threads}, TIFF, UnixCommands, VTK, Wget, 
+ Wish, wxWidgets, wxWindows, X11, XMLRPC, ZLIB
+\end{block}
+e tanti altri si trovano sul web
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]
 \frametitle{CMake tree e primi passi}
-Supponiamo di avere questo tree:
 
+\begin{block}{Tree di un progetto base}
 \begin{itemize}
-\item<1-> \textbf{src}
+\item \textbf{src}/
 \begin{itemize}
 	\item myapp.cpp
 	\item myapp.h
 	\item CMakeLists.txt
 \end{itemize}
-\item<2-> \textbf{build}
-\item<3-> CMakeLists.txt
+\item \textbf{build}/
+\item \emph{cmake}/
+\item \emph{doc}/
+\item \emph{deps}/
+\item \emph{doc}/
+\item CMakeLists.txt
+\end{itemize}
+\end{block}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]
+\frametitle{Opzioni di compilazione}
+\begin{itemize}
+ \item Definizione di opzioni di compilazione
+ \item Switch su opzioni
+ \item Switch su compilatori
+ \item Switch su librerie
+ \item etc...
 \end{itemize}
 
-Si fa la build con:
 \begin{verbatim}
- cmake .
- make
+//CMakeLists.txt
+option(MyOption "MyOption" OFF)
+//Da linea di comando
+cmake -DMyOption=ON .
+\end{verbatim}
+
+Esempio 07-qt+opengl
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]
+\frametitle{Compatibilità con versioni precedenti}
+\begin{itemize}
+\item Molto importante impostare la compatibilita con le versioni precedenti, cambi di sintassi, bug-fix e nuovi moduli.
+\item Mantenere sempre CMake all'ultima versione (attuale 2.8.10).
+\item Variabile di sistema apposita.
+\end{itemize}
+\begin{verbatim}
+ CMAKE_MINIMUM_REQUIRED(VERSION 2.6.0 FATAL_ERROR)
 \end{verbatim}
 \end{frame}
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{frame}
-	\frametitle{Linguaggio - Variabili}
+	\frametitle{Variabili in CMake}
 	\begin{itemize}
-		\item Non serve dichiararle (stringa vuota se non esistono)
-		\item Atipizzate
-		\item SET crea e modifica variabili
-		\item SET si affianca a LIST
-		\item SEPARATE\_ARGUMENTS spezza argomenti separati da spazio in una LIST
-		\item Da Cmake >2.6 variabili scoped
-\end{itemize}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-	\frametitle{Linguaggio - Variabili}
-	\begin{itemize}
-		\item Non serve dichiararle (stringa vuota se non esistono)
-		\item Atipizzate
-		\item SET crea e modifica variabili
-		\item SET si affianca a LIST
-		\item SEPARATE\_ARGUMENTS spezza argomenti separati da spazio in una LIST
-		\item In Cmake 2.4: globali (name clashing problems)  In Cmake 2.6: scoped
-		\item CMake corrente 2.8.10 (11 novembre 2012)
+		\item Non serve dichiararle (stringa vuota se non esistono).
+		\item Atipizzate.
+		\item SET crea e modifica variabili.
+		\item SET si affianca a LIST.
+		\item SEPARATE\_ARGUMENTS spezza argomenti separati da spazio in una LIST.
+		\item Da Cmake $>$ 2.6 variabili scoped.
 \end{itemize}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{frame}[fragile]
- \frametitle{Linguaggio - Variabili}
-Settare una variabile in CMake con il comando \textbf{SET}
+ \frametitle{Comando SET}
+Settare una variabile in CMake con il comando \textbf{SET}\footnote{I comandi sono case-insensitive}
+\begin{block}{Esempio di uso del comando SET}
+\begin{small}
 \begin{verbatim}
 SET(USE_BOOST_LIBRARIES "ON"}
 message(STATUS "Are you using Boost libraries? 
@@ -193,6 +207,8 @@ message(STATUS "Are you using Boost libraries?
 SET( MyProjectHeaders "Ciccio.h Pippo.h Mimmo.h")
 set( MyProjectSources "Ciccio.cpp Mimmo.cpp" )
 \end{verbatim}
+\end{small}
+\end{block}
 \end{frame}
 
 
@@ -228,18 +244,23 @@ set( MyProjectSources "Ciccio.cpp Mimmo.cpp" )
 
 \begin{frame}[fragile]
 \frametitle{Esempio di foreach e wildcards su files}
+Il comando \texttt{file} è una chiamata al sistema
+\begin{block}{Esempio}
+\begin{small}
 \begin{verbatim}
 file(GLOB mytestfiles "test*.cpp")
 foreach(testfile ${mytestfiles})
   message(STATUS "This is a test file ${testfile}")
 endforeach(testfile ${mytestfiles })
 \end{verbatim}
+\end{small}
+\end{block}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{frame}[fragile]
-\frametitle{switch condizionali di sistema}
+\frametitle{\emph{Switch} condizionali di sistema}
 \begin{verbatim}
 IF ( MSVC )
 ENDIF ( MSVC )
@@ -263,16 +284,20 @@ ENDIF (APPLE)
 
 \begin{frame}[fragile]
 \frametitle{ Espressioni regolari}
-Complicate ma possibili
+
+\begin{block}{Regexp}
 \begin{verbatim}
 STRING( REGEX MATCH ... )
 STRING (REGEX MATCHALL ... )
 STRING(REGEX REPLACE ... )
 \end{verbatim}
+\end{block}
+
 Esempio:
 \begin{verbatim}
 SET(test "hello world ! catch: me if you can")
-STRING(REGEX REPLACE ".*catch: ([^ ]+).*" "\\1" result "${test}" )
+STRING(REGEX REPLACE ".*catch: ([^ ]+).*" "\\1" 
+  result "${test}" )
 MESSAGE(STATUS "result= ${result}")
 \end{verbatim}
 stampa a stdout:
@@ -283,37 +308,8 @@ stampa a stdout:
 \end{frame}
 
 
-
-
-\begin{frame}[fragile]
- \frametitle{ Espressioni regolari }
-How to convert a semicolon separated list to a whitespace separated string?
-\begin{verbatim}
-set(foo abc.c abc.b abc.a)
-
-foreach(arg ${foo})
-    set(bar "${bar} ${arg}")
-endforeach(arg ${foo})
- 
-message("foo: ${foo}")
-message("bar: ${bar}")
-\end{verbatim}
-\end{frame}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]
-\frametitle{Compatibilità con versioni precedenti}
-\begin{itemize}
-\item Molto importante impostare la compatibilita con le versioni precedenti, cambi di sintassi e bug-fix
-\item Mantenere sempre CMake all'ultima versione (attuale 2.8.10)
-\item Variabile di sistema apposita
-\end{itemize}
-\begin{verbatim}
- CMAKE_MINIMUM_REQUIRED(VERSION 2.6.0 FATAL_ERROR)
-\end{verbatim}
-\end{frame}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{Cmake cache}
 \begin{itemize}
@@ -331,11 +327,12 @@ message("bar: ${bar}")
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \begin{frame}[fragile]
 \frametitle{Gestione di Debug e Release}
 \begin{itemize}
-\item Una variabile definisce il tipo di build
-\item
+\item<1-> Una variabile definisce il tipo di build
+\item<1->
 \begin{verbatim}
 SET(CMAKE_BUILD_TYPE XXX)
 \end{verbatim}
@@ -346,18 +343,19 @@ SET(CMAKE_BUILD_TYPE XXX)
     \item \texttt{MinSizeRel}
     \item \texttt{Profile}
     \end{itemize}
-\item oppure da linea di comando:
+\item<2-> oppure da linea di comando:
 \begin{verbatim}
 cmake -DCMAKE_BUILD_TYPE=Debug .
 \end{verbatim}
 
-\item \texttt{Debug} $\rightarrow$ gdb+valgrind, grosse dimensioni
-\item Si rilascia il pacchetto sempre in \texttt{Release}
-\item \texttt{Profile} utile quando accoppiata con gprof/KCacheGrind
+\item<3-> \texttt{Debug} $\rightarrow$ gdb+valgrind, grosse dimensioni
+\item<4-> \texttt{Profile} utile quando accoppiata con gprof/KCacheGrind
+\item<5-> Deploy si effettua sempre in \texttt{Release}
 \end{itemize}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \begin{frame}[fragile]
  \frametitle{Versionamento compile-time}
 \begin{itemize}
@@ -390,17 +388,18 @@ printf("La versione corrente è %d\n", revision);
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \begin{frame}[fragile]
  \frametitle{Generare la documentazione}
 Aggiungere un target \texttt{doc} ed usare \texttt{FindDoxygen.cmake}
-\begin{footnotesize}
+\begin{block}{Esempio}
+\begin{small}
 \begin{verbatim}
-# Aggiunge un target al Makefile per generare 
-# la doc usando Doxygen
 find_package(Doxygen)
 if(DOXYGEN_FOUND)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile 
     ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
+# Aggiunge un target doc al Makefile 
 add_custom_target(doc
 ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
 WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
@@ -408,24 +407,33 @@ COMMENT "Generating API documentation with Doxygen"
     VERBATIM )
 endif(DOXYGEN_FOUND)
 \end{verbatim}
-\end{footnotesize}
-\footnote{\url{http://bit.ly/9eel8b}}
+\end{small}
+\end{block}
+Vedi \url{http://bit.ly/9eel8b}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Esempi e tutorial}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{frame}[fragile]
 \frametitle{HelloWorld eseguibile}
+
+\begin{block}{Hello world!}
+\begin{small}
 \begin{verbatim}
 #Creiamo il nome del progetto
 PROJECT( helloworld )
 # Impostiamo la variabile hello_SRCS a contenere la hello.cpp
 SET( hello\_SRCS hello.cpp )
-# Crea l'eseguibile di nome hello dal file contenuto nella variabile hello\_SRCS
+# Crea l'eseguibile di nome hello dal file contenuto 
+# nella variabile hello\_SRCS
 ADD\_EXECUTABLE( hello \$\{hello\_SRCS\} )
 \end{verbatim}
+\end{small}
+\end{block}
 
 \begin{itemize}
 	\item Tutte le variabili sono \textbf{stringhe}
@@ -435,31 +443,28 @@ ADD\_EXECUTABLE( hello \$\{hello\_SRCS\} )
 	  \end{verbatim}
 	\item Le variabili si impostano con SET
 \end{itemize}
-
+Esempio 01-helloworld
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{frame}
-	\frametitle{Creazione libreria statica/dinamica}
-\begin{small}
-\#Creiamo il nome del progetto
+\begin{frame}[fragile]
+	\frametitle{Creazione librerie statica/dinamica}
+\begin{verbatim}
+#Creiamo il nome del progetto
+PROJECT( mylibrary )
+# Impostiamo la variabile mylibrary_SRCS a contenere tutti i 
+# file che definiscono la libreria
+SET( mylibrary_SRCS Foo.cpp Bar.cpp Qux.cpp)
+# Crea una libreria STATICA (di default in CMake) a partire dai sorgenti
+# in Linux con gcc genera un file \emph{lib}myLibrary.a
+ADD_LIBRARY( myLibrary ${mylibrary_SRCS} )
+# in Linux con gcc genera un file libmyLibrary.so
+ADD_LIBRARY( myLibrary ${mylibrary_SRCS} )
+\end{verbatim}
 
-\textbf{PROJECT( mylibrary )}
+Esempi 02-staticlib, 03-dynamiclib
 
-\# Impostiamo la variabile mylibrary\_SRCS a contenere tutti i file che definiscono la libreria
-
-\textbf{SET( mylibrary\_SRCS Foo.cpp Bar.cpp Qux.cpp)}
-
-\# Crea una libreria STATICA (di default in CMake) a partire dai sorgenti
-
-\# in Linux con gcc genera un file \emph{lib}myLibrary.a
-
-\textbf{ADD\_LIBRARY( myLibrary \$\{mylibrary\_SRCS\} )}
-
-\# in Linux con gcc genera un file \emph{lib}myLibrary.so
-\textbf{ADD\_LIBRARY( myLibrary \$\{mylibrary\_SRCS\} )}
-\end{small}
 \end{frame}
 
 
@@ -577,29 +582,40 @@ INCLUDE(${QT_USE_FILE})
 
 \begin{frame}[fragile]
  \frametitle{CMake e Qt}
-\begin{footnotesize}
+\begin{block}{Ingredienti}
+
+\begin{itemize} 
+\item <1-> Cercare Qt4 nel sistema
 \begin{verbatim}
-set(MyApp_HDR  Foo.h)
-# MyApp source files
-set(MyApp_SRC main.cpp mainwindow.cpp Foo.cpp )
-# User interface files
-set(MyApp_FORMS mainwindow.ui ) 
-set(MyApp_RESOURCES "myapp_images.qrc")
-
-QT4_ADD_RESOURCES( MyApp_RESOURCES_SOURCES 
-    ${MyApp_RESOURCES} )
-QT4_WRAP_UI( MyApp_FORMS_HEADERS ${MyApp_FORMS} )
-QT4_WRAP_CPP( MyApp_HEADERS_MOC ${MyApp_HDR} )
-
-add_executable(MyApp WIN32 ${MyApp_SRC} ${MyApp_HDR}
-    ${MyApp_HEADERS_MOC} ${MyApp_RESOURCES_SOURCES}
-    ${MyApp_FORMS_HEADERS} ${MyApp_RCS})
+Find_Package(Qt4 REQUIRED)
+INCLUDE( ${QT_USE_FILE} )
 \end{verbatim}
-\end{footnotesize}
+\item <2-> Indicare i sorgenti .cpp ed i forms .ui
+\begin{verbatim}
+QT4_WRAP_CPP, QT4_WRAP_UI 
+\end{verbatim}
+\item <3-> Indicare il file risorsa (icone, suoni, immagini etc)
+\begin{verbatim}
+QT4_ADD_RESOURCES
+\end{verbatim}
+\item<4-> Linkare il tutto ed includere le directory di Qt
+\begin{small}
+\begin{verbatim}
+link_libraries(${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} )
+include_directories(${QT_INCLUDE_PATH} 
+  ${QT_QTGUI_INCLUDE_DIR}
+  ${QT_QTCORE_INCLUDE_DIR} )
+\end{verbatim}
+\end{small}
+\end{itemize}
+
+\end{block}
 \end{frame}
 
 \begin{frame}[fragile]
  \frametitle{Semplice progettino con Qt}
+\begin{block}{Esempio di Qt}
+ \begin{small}
 \begin{verbatim}
 PROJECT( pfrac )
 FIND_PACKAGE( Qt4 REQUIRED )
@@ -614,6 +630,8 @@ ADD_EXECUTABLE( pfrac ${pfrac_SRCS} $
 {pfrac_MOC_SRCS} 
 TARGET_LINK_LIBRARIES( pfrac ${QT_LIBRARIES} )
 \end{verbatim}
+\end{small}
+\end{block}
 
 \end{frame}
 
@@ -628,8 +646,10 @@ Esistono diversi modi di supportare OpenGL con CMake, sono tutti cross-platform
  \item FindGlut.cmake
 \end{itemize}
 
-Su Linux è molto facile (previa installazione di GLU/GLUT/FreeGLUT
-\begin{verbatim}
+Su Linux è molto facile (previa installazione di GLU/GLUT/FreeGLUT)
+\begin{block}{Librerie OpenGL}
+ \begin{small}
+  \begin{verbatim}
 find_package(OpenGL REQUIRED)
 include_directories(${OPENGL_INCLUDE_DIR})
 find_package(GLUT REQUIRED)
@@ -637,6 +657,10 @@ set(GL_LIBS ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES})
 ...
 target_link_libraries(myApp ${GL_LIBS})
 \end{verbatim}
+ \end{small}
+\end{block}
+
+
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -681,13 +705,12 @@ install(FILES MyLibrary.h
 \begin{verbatim}
 set(CPACK_PACKAGE_NAME "MyLib")
 set(CPACK_PACKAGE_VENDOR "CMake.org")
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "MyLib - 
-    CPack Component Installation Example")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Esempio CPack")
 set(CPACK_PACKAGE_VERSION "1.0.0")
 set(CPACK_PACKAGE_VERSION_MAJOR "1")
 set(CPACK_PACKAGE_VERSION_MINOR "0")
 set(CPACK_PACKAGE_VERSION_PATCH "0")
-set(CPACK_PACKAGE_INSTALL_DIRECTORY "CPack Component Example")
+set(CPACK_PACKAGE_INSTALL_DIRECTORY "CPack Example")
 
 # Ultimo comando da includere nel CMakeLists.txt
 include(CPack)

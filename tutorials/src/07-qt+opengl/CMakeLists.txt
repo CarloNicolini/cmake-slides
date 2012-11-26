@@ -24,7 +24,6 @@ add_executable(helloGL ${HELLOGL_SRC} ${HELLOGL_HDR} ${HELLOGL_HEADERS_MOC}
 	)
 
 target_link_libraries(helloGL ${QT_LIBRARIES} ${GL_LIBS})
-
 install(TARGETS helloGL DESTINATION bin COMPONENT "${QT_LIBRARIES};${GL_LIBS}")
 endif (UNIX AND NOT APPLE)
 
