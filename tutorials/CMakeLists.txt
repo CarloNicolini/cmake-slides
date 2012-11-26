@@ -33,6 +33,6 @@ add_subdirectory(01-helloworld)
 add_subdirectory(02-staticlib)
 add_subdirectory(03-sharedlib)
 add_subdirectory(04-boostusage)
-add_subdirectory(05-cpackdeb)
+#add_subdirectory(05-cpackdeb)
 
 
