@@ -322,7 +322,14 @@ message("bar: ${bar}")
 \item CMake salva le variabili non variate in un file CMakeCache.txt
 \item Veloce su Unix, lento su Windows (MSVC)
 \item Utile ripulire la cache
-\end{itemize}	
+\end{itemize}
+
+\begin{itemize}
+\item \texttt{rm CMakeCache.txt}, oppure
+\item Cancellare manualmente il file \texttt{CMakeCache.txt}
+\item Rigenerare il progetto
+\end{itemize}
+
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -457,6 +464,12 @@ ADD\_EXECUTABLE( hello \$\{hello\_SRCS\} )
 \# in Linux con gcc genera un file \emph{lib}myLibrary.so
 \textbf{ADD\_LIBRARY( myLibrary SHARED \$\{mylibrary\_SRCS\} )}
 \end{small}
+\end{frame}
+
+
+\begin{frame}
+ \frametitle{Generazione grafo delle dipendenze}
+
 \end{frame}
 
 
