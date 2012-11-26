@@ -29,11 +29,11 @@ endif()
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${PROJECT_BINARY_DIR} )
 
-add_subdirectory(01-helloworld)
-add_subdirectory(02-staticlib)
-add_subdirectory(03-sharedlib)
-add_subdirectory(04-boostusage)
-add_subdirectory(05-cpackdeb)
+add_subdirectory(src/01-helloworld)
+add_subdirectory(src/02-staticlib)
+add_subdirectory(src/03-sharedlib)
+add_subdirectory(src/04-boostusage)
+add_subdirectory(src/05-cpackdeb)
 
 # Sezione creazione pacchi per i vari sistemi operativi
 
@@ -44,7 +44,7 @@ set(MY_BOOST_THREAD_EXAMPLE_MAJOR "1")
 set(MY_BOOST_THREAD_EXAMPLE_MINOR "0")
 set(MY_BOOST_THREAD_EXAMPLE_PATCH "0")
 
-
+set(CPACK_PACKAGE_NAME "myProgram")
 set(CPACK_PACKAGE_VERSION "${MY_BOOST_THREAD_EXAMPLE_MAJOR}.${MY_BOOST_THREAD_EXAMPLE_MINOR}.${MY_BOOST_THREAD_EXAMPLE_PATCH}")
 set(CPACK_PACKAGE_DESCRIPTION "Esempio di creazione di un pacco Linux per un semplice programma")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Abbiamo creato un pacco contenente un semplice eseguibile che sfrutta boost::thread")
@@ -79,7 +79,8 @@ if (UNIX AND NOT APPLE)
         endif(DEFINED XDG_CONFIG_DIR)
         
         # Importante questo imposta i generatori utilizzati per generare il pacco
-	set(CPACK_GENERATOR "DEB;RPM;TGZ")
+        # http://www.vtk.org/Wiki/CMake:CPackPackageGenerators#TGZ
+	set(CPACK_GENERATOR "DEB;RPM;STGZ;TZ")
 	set(CPACK_DEBIAN_ARCHITECTURE ${CMAKE_SYSTEM_PROCESSOR})
 	set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS TRUE)
         # LE DIPENDENZE PER IL PACCO RPM VENGONO RISOLTE AUTOMATICAMENTE DA CMAKE VERSIONE >= 2.8.1
@@ -106,9 +107,9 @@ if (UNIX AND NOT APPLE)
         # Imposta l'icona
         set(APP_ICON ${CMAKE_SOURCE_DIRECTORY}/resources/icons/cmake_logo.png)
         # freedesktop file, lo copia in /usr/share/applications dove stanno tutti gli altri file delle applicazioni da mostrare nella lista principale
-        install(FILES myProgram.desktop DESTINATION "share/applications/")
-        install(FILES myProgram.menu DESTINATION "${XDG_CONFIG_DIR}/menus/")
-        install(FILES myProgram.directory DESTINATION "share/desktop-directories/")
+        #install(FILES myProgram.desktop DESTINATION "share/applications/")
+        #install(FILES myProgram.menu DESTINATION "${XDG_CONFIG_DIR}/menus/")
+        #install(FILES myProgram.directory DESTINATION "share/desktop-directories/")
 endif(UNIX AND NOT APPLE)
 
 
