@@ -467,8 +467,13 @@ ADD\_EXECUTABLE( hello \$\{hello\_SRCS\} )
 \end{frame}
 
 
-\begin{frame}
+\begin{frame}[fragile]
  \frametitle{Generazione grafo delle dipendenze}
+CMake supporta la generazione visual del grafo delle dipendenze fra files, sfruttando il pacchetto di graph-drawing graphviz
+\begin{verbatim}
+cmake --graphviz=nomefile.dot .
+
+\end{verbatim}
 
 \end{frame}
 

@@ -34,11 +34,12 @@ add_subdirectory(src/02-staticlib)
 add_subdirectory(src/03-sharedlib)
 add_subdirectory(src/04-boostusage)
 add_subdirectory(src/05-cpackdeb)
+add_subdirectory(src/06-staticlibrarylinking)
 
 # Sezione creazione pacchi per i vari sistemi operativi
 
 ################################################################################
-############## CREAZIONE PACCHI OSX, WINDOWS E LINUX ###########################
+############################ CREAZIONE LINUX ###################################
 ################################################################################
 set(MY_BOOST_THREAD_EXAMPLE_MAJOR "1")
 set(MY_BOOST_THREAD_EXAMPLE_MINOR "0")
@@ -52,6 +53,8 @@ set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_SOURCE_DIR}/README.txt")
 set(CPACK_PACKAGE_CONTACT "John Doe ilmio@indirizzo.com")
 set(CPACK_PACKAGE_AUTHOR "John Doe")
 set(CPACK_PACKAGE_VENDOR "The XXX team")
+
+# Imposta la versione del pacco, MAJOR-MINOR-PATCH
 set(CPACK_PACKAGE_VERSION_MAJOR ${MY_BOOST_THREAD_EXAMPLE_MAJOR})
 set(CPACK_PACKAGE_VERSION_MINOR ${MY_BOOST_THREAD_EXAMPLE_MINOR})
 set(CPACK_PACKAGE_VERSION_PATCH ${MY_BOOST_THREAD_EXAMPLE_PATCH})
@@ -80,12 +83,12 @@ if (UNIX AND NOT APPLE)
         
         # Importante questo imposta i generatori utilizzati per generare il pacco
         # http://www.vtk.org/Wiki/CMake:CPackPackageGenerators#TGZ
-	set(CPACK_GENERATOR "DEB;RPM;STGZ;TZ")
+	set(CPACK_GENERATOR "DEB;RPM;STGZ;TGZ")
 	set(CPACK_DEBIAN_ARCHITECTURE ${CMAKE_SYSTEM_PROCESSOR})
 	set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS TRUE)
         # LE DIPENDENZE PER IL PACCO RPM VENGONO RISOLTE AUTOMATICAMENTE DA CMAKE VERSIONE >= 2.8.1
         if( NOT DESKTOP_ENTRY )
-        set( DESKTOP_ENTRY myProgram.desktop )
+        set( DESKTOP_ENTRY ${CMAKE_CURRENT_SOURCE_DIR}/myProgram.desktop )
         endif( NOT DESKTOP_ENTRY )
         # Crea il file myprogram.desktop
         add_custom_command( OUTPUT ${DESKTOP_ENTRY} COMMAND touch ${DESKTOP_ENTRY} COMMAND sh ${CMAKE_MODULE_PATH}/generateLinuxDesktopEntry.sh ${CMAKE_INSTALL_PREFIX} >${DESKTOP_ENTRY} 
@@ -93,19 +96,19 @@ if (UNIX AND NOT APPLE)
         add_custom_target( DESKTOP_ENTRY_FILE ALL DEPENDS ${DESKTOP_ENTRY} )
         # crea il file myProgram.menu XML contenente le informazioni per aggiungere al menu
         if( NOT MENU_ENTRY )
-                set( MENU_ENTRY myProgram.menu )
+                set( MENU_ENTRY ${CMAKE_CURRENT_SOURCE_DIR}/myProgram.menu )
         endif( NOT MENU_ENTRY )
         add_custom_command( OUTPUT ${MENU_ENTRY} COMMAND touch ${MENU_ENTRY} COMMAND sh ${CMAKE_MODULE_PATH}/generateLinuxMenuEntry.sh ${CMAKE_INSTALL_PREFIX} >${MENU_ENTRY} DEPENDS ${CMAKE_MODULE_PATH}/generateLinuxMenuEntry.sh COMMENT "Generating menu XML entry file")
         add_custom_target( MENU_ENTRY_FILE ALL DEPENDS ${MENU_ENTRY} )
 
         if( NOT DIRECTORY_ENTRY )
-                set( DIRECTORY_ENTRY myProgram.directory )
+                set( DIRECTORY_ENTRY ${CMAKE_CURRENT_SOURCE_DIR}/myProgram.directory )
         endif( NOT DIRECTORY_ENTRY )
         add_custom_command( OUTPUT ${DIRECTORY_ENTRY} COMMAND touch ${DIRECTORY_ENTRY} COMMAND sh ${CMAKE_MODULE_PATH}/generateLinuxDirectory.sh ${CMAKE_INSTALL_PREFIX} >${DIRECTORY_ENTRY} DEPENDS ${CMAKE_MODULE_PATH}/generateLinuxDirectory.sh COMMENT "Generating linux directory entry file")
         add_custom_target( DIRECTORY_ENTRY_FILE ALL DEPENDS ${DIRECTORY_ENTRY} )
 
         # Imposta l'icona
-        set(APP_ICON ${CMAKE_SOURCE_DIRECTORY}/resources/icons/cmake_logo.png)
+        set(APP_ICON ${CMAKE_SOURCE_DIRECTORY}/resources/icons/logo.png)
         # freedesktop file, lo copia in /usr/share/applications dove stanno tutti gli altri file delle applicazioni da mostrare nella lista principale
         #install(FILES myProgram.desktop DESTINATION "share/applications/")
         #install(FILES myProgram.menu DESTINATION "${XDG_CONFIG_DIR}/menus/")
