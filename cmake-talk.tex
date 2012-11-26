@@ -80,15 +80,10 @@ Vogliamo un sistema di build che ci permetta
 Un sistema di build si occupa di generare eseguibili/librerie partendo dai sorgenti \footnote{\url{http://www.cs.virginia.edu/~dww4s/articles/build_systems.html}}
 \begin{figure}[htb]
  \centering
- \includegraphics[width=0.6\textwidth]{hello_digraph.png}
+ \includegraphics[width=0.6\textwidth]{images/hello_digraph.png}
 \end{figure}
-Problema delle dipendenze è un problema su grafo DAG. Il grafo direzionato informa il sistema di build cosa ricompilare se un file cambia. Se \texttt{hello.c} cambia allora tutti i nodi da lì in poi devono essere ricompilati
-Un buon sistema di build affronta e risolve i seguenti problemi:
-\begin{itemize}
-\item Soluzione delle dipendenze 
-\item Build parallele
-\item Analisi dei punti di articolazione (limite al parallelismo)
-\end{itemize}
+Problema delle dipendenze = punti d'articolazione su grafo DAG. Limite al parallelismo.
+
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -105,9 +100,8 @@ e passiamo ai sistemi di build automatici:
 \item<2-> Autotools \textit{ molto usato, sintassi complicata (Autohell), solo Unix }
 \item<3-> Jam \textit{ (cross-platform,cross-language), buggy, poco automatico}\footnote{\url{http://en.wikipedia.org/wiki/Perforce_Jam}}
 \item<4-> Waf \textit{ python un singolo file da redistribuire \footnote{\url{http://docs.waf.googlecode.com/git/book_17/waf.pdf}}}
-\item<5-> eccetera...
+\item<5-> Altri?
 \end{itemize}
-In genere, poco supporto, piccola comunità, tanti bachi.
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -133,17 +127,6 @@ Kdevelop3, Eclipse, XCode, Code::Blocks ,VisualStudio, Makefiles (Unix, NMake, B
 		\item<10-> \textbf{Out-of-source} builds: fare una build senza ``sporcare'' la codebase
 \end{itemize}
 \end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\begin{frame}
-%\frametitle{CMake workflow}
-%	\begin{itemize}
-%		\item CMakeLists.txt
-%		\item Makefile/.vcproj/ .xcode
-%		\item .obj/.o
-%		\item .exe/ .dll/ .lib/ .dylib
-%	\end{itemize}
-%\end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]
@@ -179,8 +162,7 @@ Si fa la build con:
 		\item SET crea e modifica variabili
 		\item SET si affianca a LIST
 		\item SEPARATE\_ARGUMENTS spezza argomenti separati da spazio in una LIST
-		\item In Cmake 2.4: globali (name clashing problems)  In Cmake 2.6: scoped
-		\item CMake corrente 2.9
+		\item Da Cmake >2.6 variabili scoped
 \end{itemize}
 \end{frame}
 
@@ -194,9 +176,25 @@ Si fa la build con:
 		\item SET si affianca a LIST
 		\item SEPARATE\_ARGUMENTS spezza argomenti separati da spazio in una LIST
 		\item In Cmake 2.4: globali (name clashing problems)  In Cmake 2.6: scoped
-		\item CMake corrente 2.9
+		\item CMake corrente 2.8.10 (11 novembre 2012)
 \end{itemize}
 \end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]
+ \frametitle{Linguaggio - Variabili}
+Settare una variabile in CMake con il comando \textbf{SET}
+\begin{verbatim}
+SET(USE_BOOST_LIBRARIES "ON"}
+message(STATUS "Are you using Boost libraries? 
+    ${USE_BOOST_LIBRARIES})
+
+SET( MyProjectHeaders "Ciccio.h Pippo.h Mimmo.h")
+set( MyProjectSources "Ciccio.cpp Mimmo.cpp" )
+\end{verbatim}
+\end{frame}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -281,7 +279,7 @@ stampa a stdout:
 \begin{verbatim}
   -- result= me
 \end{verbatim}
-(il ``--'' è stampato ad ogni riga di default)
+(il \texttt{--} è stampato ad ogni riga di default)
 \end{frame}
 
 
@@ -342,11 +340,11 @@ message("bar: ${bar}")
 SET(CMAKE_BUILD_TYPE XXX)
 \end{verbatim}
     \begin{itemize}
-    \item Debug
-    \item Release
-    \item RelWithDebInfo
-    \item MinSizeRel
-    \item Profile
+    \item \texttt{Debug}
+    \item \texttt{Release}
+    \item \texttt{RelWithDebInfo}
+    \item \texttt{MinSizeRel}
+    \item \texttt{Profile}
     \end{itemize}
 \item oppure da linea di comando:
 \begin{verbatim}
@@ -443,7 +441,7 @@ ADD\_EXECUTABLE( hello \$\{hello\_SRCS\} )
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{frame}
-	\frametitle{Creazione libreria statica .a}
+	\frametitle{Creazione libreria statica/dinamica}
 \begin{small}
 \#Creiamo il nome del progetto
 
@@ -459,27 +457,82 @@ ADD\_EXECUTABLE( hello \$\{hello\_SRCS\} )
 
 \textbf{ADD\_LIBRARY( myLibrary \$\{mylibrary\_SRCS\} )}
 
-\# Oppure crea una libreria SHARED (o DINAMICA in Windows) a partire dai sorgenti
-
 \# in Linux con gcc genera un file \emph{lib}myLibrary.so
-\textbf{ADD\_LIBRARY( myLibrary SHARED \$\{mylibrary\_SRCS\} )}
+\textbf{ADD\_LIBRARY( myLibrary \$\{mylibrary\_SRCS\} )}
 \end{small}
 \end{frame}
 
 
 \begin{frame}[fragile]
  \frametitle{Generazione grafo delle dipendenze}
-CMake supporta la generazione visual del grafo delle dipendenze fra files, sfruttando il pacchetto di graph-drawing graphviz
+CMake supporta la generazione visual del grafo delle dipendenze fra files, sfruttando il pacchetto di graph-drawing \textbf{Graphviz}
 \begin{verbatim}
-cmake --graphviz=nomefile.dot .
-
+cmake --graphviz=dependencies.dot .
+dot -Tpng dependencies.dot > dependencies.png
 \end{verbatim}
-
+\begin{figure}[htb]
+ \centering
+ \includegraphics[width=0.9\textwidth]{images/dependencies.png}
+\end{figure}
 \end{frame}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]
+\frametitle{Boost}
+Boost è una libreria estensione del C++:
+\begin{itemize}
+\item ``...one of the most highly regarded and expertly designed C++ library projects in the world.''
+— Herb Sutter and Andrei Alexandrescu, C++ Coding Standards
+\item ``Item 55: Familiarize yourself with Boost.``
+— Scott Meyers, Effective C++, 3rd Ed.
+\end{itemize}
+Boost contiene supporto headers-only e anche librerie bimap, containers generici, interfacce IO, socket, \textbf{threading} e molto altro ancora.
+\end{frame}
+
+\begin{frame}[fragile]
+ \frametitle{CMake + Boost}
+Nel CMakeLists.txt di base
+\begin{verbatim}
+# Set the needed boost libraries 
+set(BOOST_LIBS thread date_time system program_options 
+  filesystem regex serialization iostreams)
+set(Boost_USE_STATIC_LIBS        ON)
+set(Boost_USE_MULTITHREADED      ON)
+set(Boost_USE_STATIC_RUNTIME    OFF)
+
+find_package(Boost COMPONENTS ${BOOST_LIBS} REQUIRED)
+include_directories(${Boost_INCLUDE_DIR})
+find_package(Threads REQUIRED)
+\end{verbatim}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]
+ \frametitle{CMake + Boost}
+Linkare una libreria a Boost
+\begin{verbatim}
+add_library(FooBar Foo.cpp Bar.cpp)
+target_link_libraries(FooBar 
+  ${BOOST_LIBRARIES})
+\end{verbatim}
+Linkare un eseguibile a Boost:
+\begin{verbatim}
+add_executable(myApplication myApplication.cpp 
+    Foo.cpp Bar.cpp)
+target_link_libraries(myApplication(myApplication 
+    ${BOOST_LIBRARIES})
+\end{verbatim}
+Viene \textbf{automagicamente} selezionata la versione della libreria corretta:
+\begin{itemize}
+\item \textbf{build statica multithread} \verb_/usr/lib/libboost_\verb_thread-mt.a_
+\item \textbf{build dinamica non-multithread} \verb_/usr/lib/libboost_\verb_thread.so_
+\end{itemize}
+\end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Supporto a librerie esterne}
@@ -497,7 +550,7 @@ endif()
 \end{verbatim}
 \end{footnotesize}
 \begin{itemize}
- \item Sceglie il flag appropriato del compilatore (g++ -fopenmp, icc -openmp, MSVC /OMP )
+ \item Sceglie il flag appropriato del compilatore (\texttt{-fopenmp} su g++ , \texttt{-openmp} su Intel icc, \texttt{/openmp} su MSVC )
  \item Problemi con \texttt{vcompd.dll}, modificare il file manifest con MSVC9 (2008)\footnote{\url{http://kitware.com/blog/home/post/4}}
 \item \url{http://public.kitware.com/Bug/view.php?id=12964}
 \end{itemize}
@@ -548,7 +601,7 @@ add_executable(MyApp WIN32 ${MyApp_SRC} ${MyApp_HDR}
 \begin{frame}[fragile]
  \frametitle{Semplice progettino con Qt}
 \begin{verbatim}
- PROJECT( pfrac )
+PROJECT( pfrac )
 FIND_PACKAGE( Qt4 REQUIRED )
 INCLUDE( ${QT_USE_FILE} )
 SET( pfrac_SRCS main.cpp client.h client.cpp )
@@ -564,63 +617,6 @@ TARGET_LINK_LIBRARIES( pfrac ${QT_LIBRARIES} )
 
 \end{frame}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\begin{frame}[fragile]
-\frametitle{Boost}
-Boost è una libreria estensione del C++:
-\begin{itemize}
-\item ``...one of the most highly regarded and expertly designed C++ library projects in the world.''
-— Herb Sutter and Andrei Alexandrescu, C++ Coding Standards
-\item ``Item 55: Familiarize yourself with Boost.``
-— Scott Meyers, Effective C++, 3rd Ed.
-\item ``The obvious solution for most programmers is to use a library that provides an elegant and efficient platform independent to needed services. Examples are BOOST...''
-— Bjarne Stroustrup, Abstraction, libraries, and efficiency in C++
-\end{itemize}
-Boost contiene supporto headers-only e anche librerie bimap, containers generici, interfacce IO, socket, \textbf{threading}.
-\end{frame}
-
-\begin{frame}[fragile]
- \frametitle{CMake + Boost}
-Nel CMakeLists.txt di base
-\begin{verbatim}
-# Set the needed boost libraries 
-set(BOOST_LIBS thread date_time system program_options 
-  filesystem regex serialization iostreams)
-set(Boost_USE_STATIC_LIBS        ON)
-set(Boost_USE_MULTITHREADED      ON)
-set(Boost_USE_STATIC_RUNTIME    OFF)
-
-find_package(Boost COMPONENTS ${BOOST_LIBS} REQUIRED)
-include_directories(${Boost_INCLUDE_DIR})
-find_package(Threads REQUIRED)
-\end{verbatim}
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\begin{frame}[fragile]
- \frametitle{CMake + Boost}
-Linkare una libreria a Boost
-\begin{verbatim}
-add_library(FooBar Foo.cpp Bar.cpp)
-target_link_libraries(FooBar 
-  ${BOOST_LIBRARIES})
-\end{verbatim}
-Linkare un eseguibile a Boost:
-\begin{verbatim}
-add_executable(myApplication myApplication.cpp 
-    Foo.cpp Bar.cpp)
-target_link_libraries(myApplication(myApplication 
-    ${BOOST_LIBRARIES})
-\end{verbatim}
-Viene \textbf{automagicamente} selezionata la versione della libreria corretta:
-\begin{itemize}
-\item \textbf{build statica multithread} \verb_/usr/lib/libboost_\verb_thread-mt.a_
-\item \textbf{build dinamica non-multithread} \verb_/usr/lib/libboost_\verb_thread.so_
-\end{itemize}
-\end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -645,29 +641,9 @@ target_link_libraries(myApp ${GL_LIBS})
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{frame}
- \frametitle{Chiamate al sistema}
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\begin{frame}[fragile]
- \frametitle{Chiamate al sistema - Esempio}
-\begin{verbatim}
-include( UseCython )
-add_custom_target( ReplicatePythonSourceTree ALL ${CMAKE_COMMAND} -P
-  ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ReplicatePythonSourceTree.cmake
-  ${CMAKE_CURRENT_BINARY_DIR}
-  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )
-\end{verbatim}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 \section{Creazione pacchi con CPack}
 \begin{frame}
-\frametitle{Highlighting}
+\frametitle{CPack}
 CPack è il progetto cugino di CMake con cui è strettamente integrato e permette di creare pacchi:
 \begin{itemize}
 \item Linux generici ( .sh, .tgz )
@@ -679,15 +655,62 @@ CPack è il progetto cugino di CMake con cui è strettamente integrato e permett
 \item Pacchi architettura-specifici
 \item Cross compilazione!
 \end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{CPack}
+Creazione di un installer per una libreria  \textbf{MyLib} \footnote{\url{http://cmake.org/Wiki/CMake:Component_Install_With_CPack}}
+\begin{verbatim}
+install(TARGETS MyLib 
+  ARCHIVE
+  DESTINATION lib)
+
+install(TARGETS MyLibApp
+  RUNTIME
+  DESTINATION bin)
+
+install(FILES MyLibrary.h
+  DESTINATION include)
+\end{verbatim}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+ \frametitle{Installer per la libreria MyLib}
+\begin{verbatim}
+set(CPACK_PACKAGE_NAME "MyLib")
+set(CPACK_PACKAGE_VENDOR "CMake.org")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "MyLib - 
+    CPack Component Installation Example")
+set(CPACK_PACKAGE_VERSION "1.0.0")
+set(CPACK_PACKAGE_VERSION_MAJOR "1")
+set(CPACK_PACKAGE_VERSION_MINOR "0")
+set(CPACK_PACKAGE_VERSION_PATCH "0")
+set(CPACK_PACKAGE_INSTALL_DIRECTORY "CPack Component Example")
+
+# Ultimo comando da includere nel CMakeLists.txt
+include(CPack)
+\end{verbatim}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\frametitle{Hands on CMake/CPack}
+
+Ho preparato alcune risorse per potere meglio capire i concetti 
+\begin{block}{Pacchetti necessari}
+\texttt{sudo apt-get git install build-essentials cmake libbboost-dev}
+\end{block}
+
+\begin{block}{GitHub repository}
+\texttt{git clone https://github.com/CarloNicolini/cmake-slides.git} 
+\end{block}
 
 \end{frame}
 
-
-\newcommand{\putlink} [1]{%
-                          \pgfsetlinewidth{1.4pt}%
-                          \pgfsetendarrow{\pgfarrowtriangle{4pt}}%
-\pgfline{\pgfxy(1,1)}{\pgfxy(#1,1)}
-                         }
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{frame}
 \frametitle{Risorse online}
@@ -699,24 +722,19 @@ CPack è il progetto cugino di CMake con cui è strettamente integrato e permett
 Mailing list ufficiale degli utenti di CMake
 \newblock{\url{http://www.cmake.org/mailman/listinfo/cmake}}
 
-               \bibitem{stackoverflow}
-               Sito di domande e risposte, frequentato da molti utenti di CMake
-               \newblock{\url{www.stackoverflow.com}}
+\bibitem{stackoverflow}
+Sito di domande e risposte, frequentato da molti utenti di CMake
+\newblock{\url{www.stackoverflow.com}}
 
-               \bibitem{Cmake tutorial}
-               CMake tutorial online
-               \newblock{\url{http://www.cmake.org/cmake/help/cmake_tutorial.html}}
+\bibitem{Cmake tutorial}
+CMake tutorial online
+\newblock{\url{http://www.cmake.org/cmake/help/cmake_tutorial.html}}
 
-                              \bibitem{Mastering CMake}
-                              Il libro ufficiale, insostituibile (in biblioteca di ingegneria a Mesiano )
-                              \newblock{\url{http://www.kitware.com/products/books/CMakeBook.html}}
-
-                                        \bibitem{kdeslides}
-                                        Slides fatte con il tema beamer offerto da KDE
-                                        \newblock {\tt http://www.kde.org/kdeslides/}
-
-                                                \end{thebibliography}
-                                                \end{frame}
+\bibitem{Mastering CMake}
+Il libro ufficiale, insostituibile
+\newblock{\url{http://www.kitware.com/products/books/CMakeBook.html}}
+\end{thebibliography}
+\end{frame}
 
 \frame{
     \vspace{2cm}

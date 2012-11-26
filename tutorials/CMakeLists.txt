@@ -36,6 +36,23 @@ add_subdirectory(src/04-boostusage)
 add_subdirectory(src/05-cpackdeb)
 add_subdirectory(src/06-staticlibrarylinking)
 
+if ( CREATE_QT_OPENGL_EXAMPLE )
+# Find OpenGL and GLUT libraries
+find_package(OpenGL REQUIRED)
+find_package(GLUT REQUIRED)
+
+include_directories(${OPENGL_INCLUDE_DIR})
+set(GL_LIBS ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES})
+
+# Search for QT LIBRARIES
+set(QT_MIN_VERSION "4.6.0")
+set(QT_USE_QTMAIN TRUE)
+set(QT_USE_OPENGL TRUE)
+find_package(Qt4 4.6.0 COMPONENTS QtGui QtCore QtOpenGL QtSvg REQUIRED )
+INCLUDE(${QT_USE_FILE})
+add_subdirectory(src/07-qt+opengl)
+endif ( CREATE_QT_OPENGL_EXAMPLE )
+
 # Sezione creazione pacchi per i vari sistemi operativi
 
 ################################################################################
