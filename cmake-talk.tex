@@ -104,7 +104,7 @@ Kdevelop3, Eclipse, XCode, Code::Blocks ,VisualStudio, Makefiles (Unix, NMake, B
 \begin{frame}[fragile]
  \frametitle{Moduli supportati}
 \begin{block}{Forniti insieme a CMake}
- ALSA, Armadillo, ASPELL, AVIFile, BISON, \textbf{BLAS}, Boost, Bullet, BZip2, CABLE, 
+ ALSA, Armadillo, ASPELL, AVIFile, BISON, \textbf{BLAS}, \textbf{Boost}, Bullet, BZip2, CABLE, 
  Coin3D, \textbf{CUDA}, Cups, CURL, Curses, CVS, CxxTest, \textbf{Cygwin}, Dart, DCMTK, 
  DevIL, Doxygen, EXPAT, FLEX, FLTK2, FLTK, Gettext,
  GIF, Git, GLU, \textbf{GLUT}, Gnuplot, GnuTLS, GTest, GTK2, GTK, HDF5, HSPELL, 
@@ -180,15 +180,25 @@ Esempio 07-qt+opengl
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{frame}
+\begin{frame}[fragile]
 	\frametitle{Variabili in CMake}
 	\begin{itemize}
 		\item Non serve dichiararle (stringa vuota se non esistono).
 		\item Atipizzate.
 		\item SET crea e modifica variabili.
-		\item SET si affianca a LIST.
 		\item SEPARATE\_ARGUMENTS spezza argomenti separati da spazio in una LIST.
 		\item Da Cmake $>$ 2.6 variabili scoped.
+		\item Dereferenza stile bash (attenzione all'assegnazione!) 
+		\begin{alertblock}{Attenzione}
+			\begin{small}
+			\begin{verbatim}
+			FOO="fooval"
+			BAR=FOO
+			QUX=${FOO}
+		\end{verbatim}
+		\end{small}
+		BAR e QUX hanno valori diversi! (tutte variabili sono stringhe)
+		\end{alertblock}
 \end{itemize}
 \end{frame}
 
@@ -200,7 +210,7 @@ Settare una variabile in CMake con il comando \textbf{SET}\footnote{I comandi so
 \begin{block}{Esempio di uso del comando SET}
 \begin{small}
 \begin{verbatim}
-SET(USE_BOOST_LIBRARIES "ON"}
+SET(USE_BOOST_LIBRARIES "ON")
 message(STATUS "Are you using Boost libraries? 
     ${USE_BOOST_LIBRARIES})
 
@@ -294,12 +304,16 @@ STRING(REGEX REPLACE ... )
 \end{block}
 
 Esempio:
+\begin{block}{Esempio regex}
+\begin{small}
 \begin{verbatim}
 SET(test "hello world ! catch: me if you can")
 STRING(REGEX REPLACE ".*catch: ([^ ]+).*" "\\1" 
   result "${test}" )
 MESSAGE(STATUS "result= ${result}")
 \end{verbatim}
+\end{small}
+\end{block}
 stampa a stdout:
 \begin{verbatim}
   -- result= me
@@ -332,7 +346,7 @@ stampa a stdout:
 \frametitle{Gestione di Debug e Release}
 \begin{itemize}
 \item<1-> Una variabile definisce il tipo di build
-\item<1->
+\item<2->
 \begin{verbatim}
 SET(CMAKE_BUILD_TYPE XXX)
 \end{verbatim}
@@ -343,48 +357,48 @@ SET(CMAKE_BUILD_TYPE XXX)
     \item \texttt{MinSizeRel}
     \item \texttt{Profile}
     \end{itemize}
-\item<2-> oppure da linea di comando:
+\item<3-> oppure da linea di comando:
 \begin{verbatim}
 cmake -DCMAKE_BUILD_TYPE=Debug .
 \end{verbatim}
 
-\item<3-> \texttt{Debug} $\rightarrow$ gdb+valgrind, grosse dimensioni
-\item<4-> \texttt{Profile} utile quando accoppiata con gprof/KCacheGrind
-\item<5-> Deploy si effettua sempre in \texttt{Release}
+\item<4-> \texttt{Debug} $\rightarrow$ gdb+valgrind, grosse dimensioni
+\item<5-> \texttt{Profile} utile quando accoppiata con gprof/KCacheGrind
+\item<6-> Deploy si effettua sempre in \texttt{Release}
 \end{itemize}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{frame}[fragile]
- \frametitle{Versionamento compile-time}
-\begin{itemize}
- \item Utilizzare il modulo \texttt{UseSubversion} \url{http://bit.ly/WjwiRP} (ripulire il repo prima)
-\item Vengono definite alcune variabili utili:
-\begin{itemize}
-\item 
+ \frametitle{Informazioni revisione compile-time}
+Viene in aiuto il modulo FindSubversion (ripulire cache prima)
 
+\begin{block}{Working copy informations}
 \begin{small}
 \begin{verbatim}
-SUBVERSION_REPO_REVISION
-SUBVERSION_REPO_LAST_CHANGED_DATE
-etcetera
+FIND_PACKAGE(Subversion)
+IF(SUBVERSION_FOUND)
+Subversion_WC_INFO(${PROJECT_SOURCE_DIR} Project)
+MESSAGE("Current revision is ${Project_WC_REVISION}")
+Subversion_WC_LOG(${PROJECT_SOURCE_DIR} Project)
+MESSAGE("Last changed log is ${Project_LAST_CHANGED_LOG}")
+ENDIF(SUBVERSION_FOUND)
 \end{verbatim}
 \end{small}
-\item Passabili al compilatore come flags:
-\begin{small}
-\begin{verbatim}
-ADD_DEFINITIONS(-DREV_NUMBER=
-"${SUBVERSION_REPO_REVISION}")
-\end{verbatim}
-\end{small}
-\end{itemize}
-\item Nel codice C/C++ quindi:
-\begin{verbatim}
-int revision=REV_NUMBER;
-printf("La versione corrente è %d\n", revision);
-\end{verbatim}
-\end{itemize}
+\end{block}
+
+Usare ADD\_DEFINITIONS:
+
+%\begin{block}
+%\begin{small}
+%\begin{verbatim}
+%ADD_DEFINITIONS(-DREV_NUMBER=
+%"${SUBVERSION_REPO_REVISION}")
+%\end{verbatim}
+%\end{small}
+%\end{block}
+
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -435,15 +449,7 @@ ADD\_EXECUTABLE( hello \$\{hello\_SRCS\} )
 \end{small}
 \end{block}
 
-\begin{itemize}
-	\item Tutte le variabili sono \textbf{stringhe}
-	\item Le variabili si dereferenziano bash-style 
-	  \begin{verbatim}
-	  ${NOMEVARIABILE} 
-	  \end{verbatim}
-	\item Le variabili si impostano con SET
-\end{itemize}
-Esempio 01-helloworld
+\emph{Esempio 01-helloworld}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -456,14 +462,14 @@ PROJECT( mylibrary )
 # Impostiamo la variabile mylibrary_SRCS a contenere tutti i 
 # file che definiscono la libreria
 SET( mylibrary_SRCS Foo.cpp Bar.cpp Qux.cpp)
-# Crea una libreria STATICA (di default in CMake) a partire dai sorgenti
-# in Linux con gcc genera un file \emph{lib}myLibrary.a
-ADD_LIBRARY( myLibrary ${mylibrary_SRCS} )
-# in Linux con gcc genera un file libmyLibrary.so
+# Crea una libreria STATICA (di default in CMake) 
+# in Linux con gcc genera un file libMyLibrary.a
+ADD_LIBRARY( MyLibrary ${mylibrary_SRCS} )
+# in Linux con gcc genera un file libMyLibrary.so
 ADD_LIBRARY( myLibrary ${mylibrary_SRCS} )
 \end{verbatim}
 
-Esempi 02-staticlib, 03-dynamiclib
+\emph{Esempi 02-staticlib, 03-dynamiclib}
 
 \end{frame}
 
@@ -489,9 +495,9 @@ dot -Tpng dependencies.dot > dependencies.png
 \frametitle{Boost}
 Boost è una libreria estensione del C++:
 \begin{itemize}
-\item ``...one of the most highly regarded and expertly designed C++ library projects in the world.''
+\item ''...one of the most highly regarded and expertly designed C++ library projects in the world.''
 — Herb Sutter and Andrei Alexandrescu, C++ Coding Standards
-\item ``Item 55: Familiarize yourself with Boost.``
+\item ''Item 55: Familiarize yourself with Boost.''
 — Scott Meyers, Effective C++, 3rd Ed.
 \end{itemize}
 Boost contiene supporto headers-only e anche librerie bimap, containers generici, interfacce IO, socket, \textbf{threading} e molto altro ancora.
