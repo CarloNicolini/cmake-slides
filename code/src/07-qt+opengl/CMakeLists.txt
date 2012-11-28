@@ -16,7 +16,7 @@ QT4_WRAP_CPP( HELLOGL_HEADERS_MOC ${HELLOGL_HDR} )
 # Inizia la parte dipendente dal sistema operativo.
 
 #### LINUX ####
-if (UNIX AND NOT APPLE)
+if (UNIX)
 add_executable(helloGL ${HELLOGL_SRC} ${HELLOGL_HDR} ${HELLOGL_HEADERS_MOC}
 	# Se si vogliono inserire i file risorsa per il progetto metterli qui: 
 	# ${HELLOGL_RESOURCES_SOURCES} ${HELLOGL_RCS}
@@ -25,5 +25,5 @@ add_executable(helloGL ${HELLOGL_SRC} ${HELLOGL_HDR} ${HELLOGL_HEADERS_MOC}
 
 target_link_libraries(helloGL ${QT_LIBRARIES} ${GL_LIBS})
 install(TARGETS helloGL DESTINATION bin COMPONENT "${QT_LIBRARIES};${GL_LIBS}")
-endif (UNIX AND NOT APPLE)
+endif (UNIX)
 

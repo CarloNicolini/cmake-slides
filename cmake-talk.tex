@@ -324,12 +324,17 @@ stampa a stdout:
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{frame}
+\begin{frame}[fragile]
 \frametitle{Cmake cache}
 \begin{itemize}
 \item CMake salva le variabili non variate in un file CMakeCache.txt
 \item Veloce su Unix, lento su Windows (MSVC)
 \item Utile ripulire la cache
+
+\begin{verbatim}
+	make rebuild_cache}
+\end{verbatim}
+\item Dalla GUI, menu apposito \texttt{Reload cache}
 \end{itemize}
 
 \begin{itemize}
@@ -547,6 +552,7 @@ Viene \textbf{automagicamente} selezionata la versione della libreria corretta:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Supporto a librerie esterne}
+
 \begin{frame}[fragile]
  \frametitle{Supporto a OpenMP}
 \begin{footnotesize}
@@ -665,10 +671,40 @@ target_link_libraries(myApp ${GL_LIBS})
 \end{verbatim}
  \end{small}
 \end{block}
-
-
 \end{frame}
 
+
+\begin{frame}[fragile]
+\frametitle{Scrivere il proprio FindXXX.cmake}
+E' possibile scrivere il proprio FindXXX.cmake per includere e linkare una libreria
+\begin{itemize}
+	\item WIN32 XXX.lib
+	\item UNIX libXXX.a
+\end{itemize}
+
+\begin{block}{Esempio: FindGLEW.cmake}
+\begin{small}
+\begin{verbatim}
+FIND_PATH( GLEW_INCLUDE_DIR glew.h wglew.h
+	NAMES gl/glew.h GL/glew.h
+    PATHS /usr/local/include /opt/local/include /usr/include 
+    NO_DEFAULT_PATH NO_CMAKE_ENVIRONMENT_PATH
+    NO_CMAKE_PATH NO_SYSTEM_ENVIRONMENT_PATH
+    NO_CMAKE_SYSTEM_PATH
+	)
+   
+FIND_LIBRARY( GLEW_LIBRARY
+	NAMES "GLEW glew"
+    PATHS /usr/lib /usr/local/lib /opt/local/lib
+    NO_DEFAULT_PATH NO_CMAKE_ENVIRONMENT_PATH
+    NO_CMAKE_PATH NO_SYSTEM_ENVIRONMENT_PATH
+    NO_CMAKE_SYSTEM_PATH
+    )
+\end{verbatim}
+\end{small}
+\end{block}
+
+\end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Creazione pacchi con CPack}

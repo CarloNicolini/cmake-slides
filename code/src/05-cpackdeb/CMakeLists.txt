@@ -5,7 +5,7 @@ myProgram.cpp
 )
 
 add_executable(myProgram ${MY_PROGRAM_SRCS})
-target_link_libraries(myProgram boost_thread-mt)
+target_link_libraries(myProgram ${BOOST_LIBS})
 
 # Parte relativa a CPACK per generazione del pacchetto (debian o rpm, facendo così installa anche le dipendenze da Qt e FreeGLUT
 install(TARGETS myProgram DESTINATION bin COMPONENT)

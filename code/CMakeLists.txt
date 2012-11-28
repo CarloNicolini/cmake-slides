@@ -9,6 +9,11 @@ set(PROJECT_BINARY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/build/")
 set(LIBRARY_OUTPUT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/build/" CACHE PATH "Single directory for all libraries")
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/build/" CACHE PATH "Single directory for all executables")
 
+# This flag helps compiling dynamic libraries in OSX in both flavors
+if (APPLE)
+set(CMAKE_OSX_ARCHITECTURES "i386;x86_64")
+endif (APPLE)
+
 set(BOOST_LIBS thread date_time system program_options filesystem regex serialization iostreams)
 set(Boost_USE_STATIC_LIBS        ON)
 set(Boost_USE_MULTITHREADED      ON)
@@ -19,6 +24,7 @@ include_directories ( ${Boost_INCLUDE_DIRS} )
 find_package(Boost COMPONENTS ${BOOST_LIBS} REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})
 find_package(Threads REQUIRED)
+
 ####################### END BOOST LIBRARIES INCLUDE AND LINKING ################
 
 # Activates OpenMP on architectures which support it
