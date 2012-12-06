@@ -5,7 +5,7 @@ testBoostThreads.cpp
 )
 
 add_executable(testBoostThreads ${MY_BOOST_EXAMPLE_SRCS})
-target_link_libraries(testBoostThreads ${BOOST_LIBS})
+target_link_libraries(testBoostThreads ${Boost_LIBRARIES})
 
 # alternativo, linkare TUTTO boost
 #target_link_libraries(testBoostThreads ${BOOST_LIBS})
